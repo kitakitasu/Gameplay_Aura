@@ -62,10 +62,9 @@ public:
 	//effect产生效果之后调用
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
-	//这个TStaticFuncPtr的原理见《93》，比较绕
-	//这里Map的Value是返回Attribute的函数指针而不是Attribute是因为Map在AS构造函数中赋值，在属性值更新之后还能通过这个获取最新的属性值
+	//这个TStaticFuncPtr的原理见《93》，比较绕,这个和下面那个的效果一样
 	//TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
-	//上面的用法报错了 "Tuple.h(309): [C2672] “Invoke”: 未找到匹配的重载函数" 没找到原因，先用下面这个
+	//这里Map的Value是返回Attribute的函数指针而不是Attribute是因为Map在AS构造函数中赋值，在属性值更新之后还能通过这个获取最新的属性值
 	TMap<FGameplayTag, FGameplayAttribute(*)()> TagsToAttributes;
 	
 

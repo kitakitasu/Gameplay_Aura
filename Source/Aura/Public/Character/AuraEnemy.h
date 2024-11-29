@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/BaseCharacter.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -23,6 +25,14 @@ public:
 	/** ~Begin CombatInterface */
 	virtual int32 GetPlayerLevel() override;
 	/** ~End CombatInterface*/
+
+	UPROPERTY(BlueprintAssignable, Category = "Widget")
+	FOnAttributeChangedSignature OnHealthChangeDelegate;
+	UPROPERTY(BlueprintAssignable, Category = "Widget")
+	FOnAttributeChangedSignature OnMaxHealthChangeDelegate;
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TObjectPtr<UWidgetComponent> HealthBar;
 	
 protected:
 	virtual void BeginPlay() override;

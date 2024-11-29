@@ -3,6 +3,9 @@
 
 #include "AbilitySystem/Abilities/AuraProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actors/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -16,7 +19,7 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 }
 
-void UAuraProjectileSpell::SpawnProjectile()
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 {
 	check(ProjectileClass);
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
@@ -25,13 +28,22 @@ void UAuraProjectileSpell::SpawnProjectile()
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
 		FTransform SpawnTransform;
-		SpawnTransform.SetLocation(CombatInterface->GetWeaponSocketLocation());
-		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform,
+		const FVector SpawnLocation = CombatInterface->GetWeaponSocketLocation();
+		FRotator Rotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
+		Rotation.Pitch = 0.f;
+		SpawnTransform.SetLocation(SpawnLocation);
+		SpawnTransform.SetRotation(Rotation.Quaternion());
+		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
+			ProjectileClass,
+			SpawnTransform,
 			GetOwningActorFromActorInfo(),
 			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
-		//SpawnActorDeferred与SpawnActor的一个不同之处就在于SpawnActorDeferred需要在生成函数之后调用FinishSpawning才能完成生成，可以在中间写一些东西
+		Projectile->SetOwner(GetAvatarActorFromActorInfo()); 
+		UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		Projectile->DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

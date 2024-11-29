@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
+
 #include "GameFramework/Actor.h"
 #include "AuraProjectile.generated.h"
 
+class UNiagaraSystem;
 class UProjectileMovementComponent;
 class USphereComponent;
 
@@ -17,13 +20,30 @@ class AURA_API AAuraProjectile : public AActor
 public:	
 	AAuraProjectile();
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+
+	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = true))
+	FGameplayEffectSpecHandle DamageSpecHandle;
+	
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	virtual void OnSphereOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void Destroyed() override;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> BoomNiagara;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> BoomSound;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> FlySound;
 	
+	TObjectPtr<UAudioComponent> FlyAudioComponent;
+
+	UPROPERTY(EditAnywhere)
+	float LifeTime = 10.f;
+
 private:
 	TObjectPtr<USphereComponent> Sphere;
-
+	bool bHit = false;
 };

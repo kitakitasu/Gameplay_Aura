@@ -9,6 +9,7 @@
 #include "Interaction/CombatInterface.h"
 #include "BaseCharacter.generated.h"
 
+enum class ECharacterClass : uint8;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -36,6 +37,9 @@ protected:
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character Default")
+	ECharacterClass CharacterClass;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -54,10 +58,16 @@ protected:
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 	UFUNCTION()
-	void InitializeAttributes() const;
+	void InitializeAttributes();
 
 	UFUNCTION()
 	void AddCharacterAbilities();
+	
 private:
-	void ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;	
+	void ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
+	
+	void InitCharacterAttributeInfo();
+
+	
+	
 };

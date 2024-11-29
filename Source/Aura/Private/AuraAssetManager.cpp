@@ -2,6 +2,8 @@
 
 
 #include "AuraAssetManager.h"
+
+#include "AbilitySystemGlobals.h"
 #include "AuraGameplayTags.h"
 
 UAuraAssetManager& UAuraAssetManager::Get()
@@ -15,4 +17,7 @@ void UAuraAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
 	FAuraGameplayTags::InitializeNativeGameplayTags();
+
+	//如果不调用此函数ASC的数据传输会ERROR，在UE5.4之后此函数会由引擎自动调用
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
