@@ -9,6 +9,8 @@
 #include "Interaction/CombatInterface.h"
 #include "BaseCharacter.generated.h"
 
+class UCharacterClassInfo;
+struct FCharacterClassDefaultInfo;
 enum class ECharacterClass : uint8;
 class UGameplayEffect;
 class UAbilitySystemComponent;
@@ -28,6 +30,11 @@ public:
 
 	virtual FVector GetWeaponSocketLocation() override;
 
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
+	virtual void Die() override;
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -40,8 +47,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character Default")
 	ECharacterClass CharacterClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Character Default")
+	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 	
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 	//发射物会从这个WeaponTipSocket出来
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -56,18 +65,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
-
+	
 	UFUNCTION()
-	void InitializeAttributes();
+	virtual void InitializeAttributes();
 
 	UFUNCTION()
 	void AddCharacterAbilities();
 	
 private:
 	void ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
-	
-	void InitCharacterAttributeInfo();
 
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	//不知道为什么VitalAttribute不能和Primary,Secondary属性一起初始化，实在找不到bug出在哪了，
+	//这里就直接暴力循环初始化直到初始化成功，就停止循环
+	FTimerHandle TimerHandle;
+	void InitCharacterAttributeInfo();
+	void InitVitalAttributeInfo();
 	
 };

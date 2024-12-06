@@ -2,11 +2,16 @@
 
 
 #include "Character/AuraEnemy.h"
+
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AttributeInfo.h"
 #include "Aura/Aura.h"
 
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -25,7 +30,17 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+	InitializeHealthBar();
+	UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
+		this,
+		&AAuraEnemy::OnHitReactTagChanged
+	);
+}
 
+void AAuraEnemy::InitializeHealthBar()
+{
 	if(UAuraUserWidget* AuraHealthBar = Cast<UAuraUserWidget>(HealthBar->GetWidget()))
 	{
 		AuraHealthBar->SetWidgetController(this);
@@ -48,6 +63,19 @@ void AAuraEnemy::BeginPlay()
 	OnMaxHealthChangeDelegate.Broadcast(AuraAttributeSet->GetMaxHealth());
 }
 
+void AAuraEnemy::OnHitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
+{
+	if (NewCount > 0)
+	{
+		WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
+}
+
 void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -55,6 +83,28 @@ void AAuraEnemy::InitAbilityActorInfo()
 	InitializeAttributes();
 }
 
+void AAuraEnemy::InitializeAttributes()
+{
+	if (!HasAuthority()) return;
+	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
+}
+
+void AAuraEnemy::InitializeVitalAttributes()
+{
+	if (!HasAuthority()) return;
+	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
+}
+
+void AAuraEnemy::Die()
+{
+	Super::Die();
+	SetLifeSpan(LifeSpan);
+	DissolveMesh();
+}
+
+/*
+ * EnemyInterface 
+ */
 void AAuraEnemy::HighLightActor()
 {
 	GetMesh()->SetRenderCustomDepth(true);
@@ -69,6 +119,9 @@ void AAuraEnemy::UnHighLightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+/*
+ * CombatInterface
+ */
 int32 AAuraEnemy::GetPlayerLevel()
 {
 	return PlayerLevel;

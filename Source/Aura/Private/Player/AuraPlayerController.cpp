@@ -2,7 +2,7 @@
 
 
 #include "Player/AuraPlayerController.h"
-
+#include "GameFramework/Character.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "Input/AuraInputComponent.h"
@@ -12,6 +12,7 @@
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
+#include "UI/Widget/DamageTextWidget.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -46,7 +47,7 @@ void AAuraPlayerController::SetupInputComponent()
 
 	check(AuraInputConfig);
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
-	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	//AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
 	AuraInputComponent->BindAbilityAction(AuraInputConfig, this, &ThisClass::AbilityInputTagPressed,
 		&ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
@@ -56,6 +57,19 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
 	AutoRunning();
+}
+
+void AAuraPlayerController::ShowDamageText_Implementation(float DamageValue, ACharacter* TargetCharacter)
+{
+	if(IsValid(TargetCharacter) && DamageTextClass)
+	{
+		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
+		DamageText->RegisterComponent();
+		//DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+		//DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());
+		DamageText->SetDamageText(DamageValue);
+	}
 }
 
 void AAuraPlayerController::AutoRunning()

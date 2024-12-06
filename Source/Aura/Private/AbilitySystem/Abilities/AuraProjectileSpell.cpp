@@ -5,18 +5,16 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AuraGameplayTags.h"
+#include "GameFramework/Actor.h"
 #include "Actors/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                            const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	
 }
 
 void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
@@ -42,7 +40,21 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			);
 		Projectile->SetOwner(GetAvatarActorFromActorInfo()); 
 		UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		Projectile->DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		/*创建EffectContextHandle*/
+		FGameplayEffectContextHandle EffectContext;
+		EffectContext.AddSourceObject(Projectile);
+		EffectContext.SetAbility(this);
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		EffectContext.AddActors(Actors);
+		FHitResult HitResult;
+		HitResult.Location = ProjectileTargetLocation;
+		EffectContext.AddHitResult(HitResult);
+		Projectile->DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContext);
+
+		const float DamageValue = Damage.GetValueAtLevel(GetAbilityLevel());
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+		//将tag与数值绑定
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(Projectile->DamageSpecHandle, GameplayTags.Damage, DamageValue);
 		
 		Projectile->FinishSpawning(SpawnTransform);
 	}

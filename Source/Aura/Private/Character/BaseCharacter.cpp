@@ -5,6 +5,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/AuraGameModeBase.h"
@@ -36,6 +38,31 @@ FVector ABaseCharacter::GetWeaponSocketLocation()
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
 }
 
+UAnimMontage* ABaseCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+void ABaseCharacter::Die()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+void ABaseCharacter::MulticastHandleDeath_Implementation()
+{
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -47,9 +74,9 @@ void ABaseCharacter::InitAbilityActorInfo()
 
 void ABaseCharacter::InitializeAttributes()
 {
-	//
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitCharacterAttributeInfo, 0.2f, true);
+	ApplyGameplayEffectToSelf(DefaultPrimaryAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes, 1);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitVitalAttributeInfo, 0.1f, true);
 }
 
 void ABaseCharacter::AddCharacterAbilities()
@@ -71,26 +98,16 @@ void ABaseCharacter::ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> Attr
 
 void ABaseCharacter::InitCharacterAttributeInfo()
 {
-	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
-	const TObjectPtr<UCharacterClassInfo> CharacterClassInfo = GameMode->CharacterClassInfo;
-	const TSubclassOf<UGameplayEffect> PrimaryAttributeEffect = CharacterClassInfo->GetCharacterDefaultInfoByClass(CharacterClass).PrimaryAttributes;
-	const TSubclassOf<UGameplayEffect> SecondaryAttributeEffect = CharacterClassInfo->SecondAttributes;
-	const TSubclassOf<UGameplayEffect> VitalAttributeEffect = CharacterClassInfo->VitalAttributes;
 	
-	FGameplayEffectContextHandle PrimaryContextHandle = AbilitySystemComponent->MakeEffectContext();
-	PrimaryContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle PrimarySpecHandle = AbilitySystemComponent->MakeOutgoingSpec(PrimaryAttributeEffect, GetPlayerLevel(), PrimaryContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*PrimarySpecHandle.Data.Get());
+}
 
-	FGameplayEffectContextHandle SecondaryContextHandle = AbilitySystemComponent->MakeEffectContext();
-	SecondaryContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle SecondarySpecHandle = AbilitySystemComponent->MakeOutgoingSpec(SecondaryAttributeEffect, GetPlayerLevel(), SecondaryContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SecondarySpecHandle.Data.Get());
-
-	FGameplayEffectContextHandle VitalContextHandle = AbilitySystemComponent->MakeEffectContext();
-	VitalContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle VitalSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(VitalAttributeEffect, GetPlayerLevel(), VitalContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
-	
+void ABaseCharacter::InitVitalAttributeInfo()
+{
+	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
+	UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet);
+	if (AS->GetHealth() > 0.f)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	}
 }
 

@@ -138,7 +138,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
-
+	
+	/*
+	 * Meta Values
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Vital Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
+	
 	UFUNCTION()
 	void OnRep_Strength(FGameplayAttributeData& OldStrength) const;
 	UFUNCTION()
@@ -173,8 +180,11 @@ public:
 	void OnRep_Health(FGameplayAttributeData& OldHealth) const;
 	UFUNCTION()
 	void OnRep_Mana(FGameplayAttributeData& OldMana) const;
+
 	
 
 	private:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Prop) const;
+
+	void ShowDamageText(const FEffectProperties& Props, float Damage);
 };

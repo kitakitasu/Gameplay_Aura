@@ -7,7 +7,10 @@
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
 #include "AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -29,6 +32,9 @@ UAuraAttributeSet::UAuraAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+	//Vital Attributes
+	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Health, GetHealthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Mana, GetManaAttribute);
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -81,6 +87,39 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	if(Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+	}
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float Damage = GetIncomingDamage();
+		SetIncomingDamage(0.f);
+		if (Damage > 0.f)
+		{
+			float NewHealth = GetHealth() - Damage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+			const bool bIsFatal = NewHealth <= 0.f;
+			if (!bIsFatal)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				Props.TargetAsc->TryActivateAbilitiesByTag(TagContainer);
+			}
+			else
+			{
+				if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
+				{
+					CombatInterface->Die();
+				}
+			}
+			ShowDamageText(Props, Damage);
+		}
+	}
+}
+
+void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, float Damage)
+{
+	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+	{
+		PC->ShowDamageText(Damage, Props.TargetCharacter);
 	}
 }
 
@@ -152,6 +191,16 @@ void UAuraAttributeSet::OnRep_ManaRegeneration(FGameplayAttributeData& OldManaRe
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldManaRegeneration);
 }
 
+void UAuraAttributeSet::OnRep_MaxHealth(FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UAuraAttributeSet::OnRep_MaxMana(FGameplayAttributeData& OldMaxMana) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
+}
+
 /*
  * Vital Attributes OnRep_Function
  */
@@ -161,27 +210,17 @@ void UAuraAttributeSet::OnRep_Health(FGameplayAttributeData& OldHealth) const
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Health, OldHealth);
 }
 
-void UAuraAttributeSet::OnRep_MaxHealth(FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxHealth, OldMaxHealth);
-}
-
 void UAuraAttributeSet::OnRep_Mana(FGameplayAttributeData& OldMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Mana, OldMana);
 }
 
-void UAuraAttributeSet::OnRep_MaxMana(FGameplayAttributeData& OldMaxMana) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
-}
 
 void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallbackData& Data,
 	FEffectProperties& Prop) const
 {
 	Prop.SourceContextHandle = Data.EffectSpec.GetContext();
 	Prop.SourceAsc = Prop.SourceContextHandle.GetOriginalInstigatorAbilitySystemComponent();
-
 	if(IsValid(Prop.SourceAsc) && Prop.SourceAsc->AbilityActorInfo.IsValid() && Prop.SourceAsc->AbilityActorInfo->AvatarActor.IsValid())
 	{
 		Prop.SourceAvatarActor = Prop.SourceAsc->AbilityActorInfo->AvatarActor.Get();
@@ -207,3 +246,5 @@ void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallb
 		Prop.TargetAsc = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Prop.TargetAvatarActor);
 	}
 }
+
+

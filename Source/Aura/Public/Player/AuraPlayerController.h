@@ -7,6 +7,7 @@
 #include "Interaction/EnemyInterface.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextWidget;
 class USplineComponent;
 class UAuraAbilitySystemComponent;
 struct FGameplayTag;
@@ -27,10 +28,14 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 	
+	UFUNCTION(Client, Reliable)
+    void ShowDamageText(float DamageValue, ACharacter* TargetCharacter);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	virtual void PlayerTick(float DeltaTime) override;
+
+	
 	
 private:
 
@@ -70,10 +75,12 @@ private:
 	float ShotPressThreshold = 0.5f;
 	bool bAutoRunning = false;
 	bool bTargeting =false;
-
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 30.f;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UDamageTextWidget> DamageTextClass;
 };

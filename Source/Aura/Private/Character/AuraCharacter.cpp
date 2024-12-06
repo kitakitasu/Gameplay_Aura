@@ -5,9 +5,13 @@
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Game/AuraGameModeBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
+
+class UCharacterClassInfo;
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -25,7 +29,6 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
-
 	AddCharacterAbilities();
 }
 
@@ -45,7 +48,6 @@ int32 AAuraCharacter::GetPlayerLevel()
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	/*if(AuraPlayerState == nullptr) return;*/
 	check(AuraPlayerState);
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
@@ -57,7 +59,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 		if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
 		AuraHUD->InitOverlayWidget(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 	}
-
+	
 	InitializeAttributes();
 }
 

@@ -34,12 +34,22 @@ public:
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 	/*
+	 * Vital Attributes
+	 */
+	FGameplayTag Attributes_Vital_Health;
+	FGameplayTag Attributes_Vital_Mana;
+	/*
 	 * Input Tags
 	 */
 	FGameplayTag Input_RMB;
 	FGameplayTag Input_LMB;
 	FGameplayTag Input_1;
+	/*
+	 * 
+	 */
+	FGameplayTag Damage;
 
+	FGameplayTag Effects_HitReact;
 private:
   static FAuraGameplayTags GameplayTags;
  
