@@ -38,10 +38,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
-		Projectile->SetOwner(GetAvatarActorFromActorInfo()); 
+		Projectile->SetOwner(GetAvatarActorFromActorInfo());
+		
 		UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		/*创建EffectContextHandle*/
-		FGameplayEffectContextHandle EffectContext;
+		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
 		EffectContext.AddSourceObject(Projectile);
 		EffectContext.SetAbility(this);
 		TArray<TWeakObjectPtr<AActor>> Actors;

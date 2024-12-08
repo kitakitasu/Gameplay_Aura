@@ -29,7 +29,7 @@ public:
 	AAuraPlayerController();
 	
 	UFUNCTION(Client, Reliable)
-    void ShowDamageText(float DamageValue, ACharacter* TargetCharacter);
+    void ShowDamageText(float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

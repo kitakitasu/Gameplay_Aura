@@ -25,6 +25,9 @@ struct FEffectProperties
 	FEffectProperties() { }
 	
 	UPROPERTY()
+    FGameplayEffectContextHandle EffectContextHandle;
+	
+	UPROPERTY()
 	UAbilitySystemComponent* SourceAsc = nullptr;
 	UPROPERTY()
 	AActor* SourceAvatarActor = nullptr;
@@ -32,8 +35,7 @@ struct FEffectProperties
 	AController* SourceController = nullptr;
 	UPROPERTY()
 	ACharacter* SourceCharacter = nullptr;
-	UPROPERTY()
-	FGameplayEffectContextHandle SourceContextHandle;
+
 
 	UPROPERTY()
 	UAbilitySystemComponent* TargetAsc = nullptr;
@@ -43,8 +45,6 @@ struct FEffectProperties
 	AController* TargetController = nullptr;
 	UPROPERTY()
 	ACharacter* TargetCharacter = nullptr;
-	UPROPERTY()
-	FGameplayEffectContextHandle TargetContextHandle;
 };
 
 /*template<class T>
@@ -186,5 +186,5 @@ public:
 	private:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Prop) const;
 
-	void ShowDamageText(const FEffectProperties& Props, float Damage);
+	void ShowDamageText(const FEffectProperties& Props, float Damage, bool bIsBlocked, bool bIsCritical);
 };

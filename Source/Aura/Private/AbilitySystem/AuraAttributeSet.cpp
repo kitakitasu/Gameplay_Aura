@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -110,16 +111,18 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 					CombatInterface->Die();
 				}
 			}
-			ShowDamageText(Props, Damage);
+			bool bIsBlocked = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+			bool bIsCritical = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+			ShowDamageText(Props, Damage, bIsBlocked, bIsCritical);
 		}
 	}
 }
 
-void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, float Damage)
+void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, float Damage, bool bIsBlocked, bool bIsCritical)
 {
 	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
 	{
-		PC->ShowDamageText(Damage, Props.TargetCharacter);
+		PC->ShowDamageText(Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);
 	}
 }
 
@@ -158,7 +161,7 @@ void UAuraAttributeSet::OnRep_Armor(FGameplayAttributeData& OldArmor) const
 
 void UAuraAttributeSet::OnRep_ArmorPenetration(FGameplayAttributeData& OldArmorPenetration) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Armor, OldArmorPenetration);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ArmorPenetration, OldArmorPenetration);
 }
 
 void UAuraAttributeSet::OnRep_BlockChance(FGameplayAttributeData& OldBlockChance) const
@@ -168,27 +171,27 @@ void UAuraAttributeSet::OnRep_BlockChance(FGameplayAttributeData& OldBlockChance
 
 void UAuraAttributeSet::OnRep_CriticalHitChance(FGameplayAttributeData& OldCriticalHitChance) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldCriticalHitChance);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitChance, OldCriticalHitChance);
 }
 
 void UAuraAttributeSet::OnRep_CriticalHitDamage(FGameplayAttributeData& OldCriticalHitDamage) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldCriticalHitDamage);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
 }
 
 void UAuraAttributeSet::OnRep_CriticalHitResistance(FGameplayAttributeData& OldCriticalHitResistance) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldCriticalHitResistance);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
 }
 
 void UAuraAttributeSet::OnRep_HealthRegeneration(FGameplayAttributeData& OldHealthRegeneration) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldHealthRegeneration);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, HealthRegeneration, OldHealthRegeneration);
 }
 
 void UAuraAttributeSet::OnRep_ManaRegeneration(FGameplayAttributeData& OldManaRegeneration) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldManaRegeneration);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ManaRegeneration, OldManaRegeneration);
 }
 
 void UAuraAttributeSet::OnRep_MaxHealth(FGameplayAttributeData& OldMaxHealth) const
@@ -219,8 +222,8 @@ void UAuraAttributeSet::OnRep_Mana(FGameplayAttributeData& OldMana) const
 void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallbackData& Data,
 	FEffectProperties& Prop) const
 {
-	Prop.SourceContextHandle = Data.EffectSpec.GetContext();
-	Prop.SourceAsc = Prop.SourceContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	Prop.EffectContextHandle = Data.EffectSpec.GetContext();
+	Prop.SourceAsc = Prop.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 	if(IsValid(Prop.SourceAsc) && Prop.SourceAsc->AbilityActorInfo.IsValid() && Prop.SourceAsc->AbilityActorInfo->AvatarActor.IsValid())
 	{
 		Prop.SourceAvatarActor = Prop.SourceAsc->AbilityActorInfo->AvatarActor.Get();

@@ -5,8 +5,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
-#include "Engine/SpringInterpolator.h"
 
 //这里写的是原生的C++struct，不加UStruct
 struct DamageStatic
@@ -56,6 +56,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const AActor* SourceActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetEffectContext();
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	EvaluateParameters.SourceTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -83,7 +84,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	TargetCriticalHitResistance = FMath::Max(0.f, TargetCriticalHitResistance);
 	/*通过相关属性值计算最终伤害值*/
 	//格挡
-	const bool bBlocked = FMath::RandRange(1,100) <= TargetBlockChance;
+	bool bBlocked = FMath::RandRange(1,100) <= TargetBlockChance;
+	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 	Damage = bBlocked ? Damage/2 : Damage;
 	//护甲
 	float EffectiveArmor = TargetArmor / ((100 - SourceArmorPenetration) / 100);
@@ -91,6 +93,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//暴击
 	float EffectiveCriticalHitChance = SourceCriticalHitChance * ((100 - TargetCriticalHitResistance) / 100);
 	bool bCritical = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCritical);
 	Damage = bCritical ? Damage * SourceCriticalHitDamage * 0.01 : Damage;
 	
 	/*修改属性值*/
