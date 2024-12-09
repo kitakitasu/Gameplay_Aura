@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "DamageTextWidget.generated.h"
 
+struct FGameplayTag;
 /**
  * 
  */
@@ -15,5 +16,5 @@ class AURA_API UDamageTextWidget : public UWidgetComponent
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetDamageText(float Damage, bool bIsBlocked, bool bIsCritical);
+	void SetDamageText(FGameplayTag DamageType, float Damage, bool bIsBlocked, bool bIsCritical);
 };

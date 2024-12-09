@@ -56,20 +56,24 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 	UCharacterClassInfo* CharacterClassInfo = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject))->CharacterClassInfo;
 	FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetCharacterDefaultInfoByClass(CharacterClass);
+	
+	FGameplayEffectContextHandle AttributesContextHandle = ASC->MakeEffectContext();
+	AttributesContextHandle.AddSourceObject(AvatarActor);
 
-	FGameplayEffectContextHandle PrimaryAttributesContextHandle = ASC->MakeEffectContext();
-	PrimaryAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributesContextHandle);
+	check(ClassDefaultInfo.PrimaryAttributes);
+	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, AttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data.Get());
 
-	FGameplayEffectContextHandle SecondaryAttributesContextHandle = ASC->MakeEffectContext();
-	SecondaryAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondAttributes, Level, SecondaryAttributesContextHandle);
+	check(CharacterClassInfo->SecondAttributes);
+	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondAttributes, Level, AttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*SecondaryAttributesSpecHandle.Data.Get());
 
-	FGameplayEffectContextHandle VitalAttributesContextHandle = ASC->MakeEffectContext();
-	VitalAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalAttributesContextHandle);
+	check(CharacterClassInfo->ResistanceAttributes);
+	const FGameplayEffectSpecHandle ResistanceAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->ResistanceAttributes, Level, AttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*ResistanceAttributesSpecHandle.Data.Get());
+
+	check(CharacterClassInfo->VitalAttributes);
+	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, AttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
 }
 

@@ -17,7 +17,5 @@ public:
 	//激活这个Ability的输入按键的Tag
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
-
-	UPROPERTY(EditDefaultsOnly)
-	FScalableFloat Damage;
+	
 };

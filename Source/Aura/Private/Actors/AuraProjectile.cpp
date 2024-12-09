@@ -64,6 +64,7 @@ void AAuraProjectile::Destroyed()
 {
 	if(bHit && !HasAuthority())
 	{
+		if (FlyAudioComponent) FlyAudioComponent->Stop();
 		UGameplayStatics::PlaySoundAtLocation(this, BoomSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, BoomNiagara, GetActorLocation());
 	}

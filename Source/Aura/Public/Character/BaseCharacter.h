@@ -61,12 +61,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultResistanceAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
     TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	virtual void InitializeAttributes();
 
 	UFUNCTION()

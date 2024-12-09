@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "AuraAbilityTypes.h"
+﻿#include "AuraAbilityTypes.h"
 
 bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
 {
@@ -10,7 +9,7 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 		{
 			RepBits |= 1 << 0;
 		}
-		if (bReplicateEffectCauser && EffectCauser.IsValid() )
+		if (bReplicateEffectCauser && EffectCauser.IsValid())
 		{
 			RepBits |= 1 << 1;
 		}
@@ -34,6 +33,7 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 		{
 			RepBits |= 1 << 6;
 		}
+
 		if (bIsBlockedHit)
 		{
 			RepBits |= 1 << 7;
@@ -91,7 +91,6 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 	{
 		Ar << bIsBlockedHit;
 	}
-
 	if (RepBits & (1 << 8))
 	{
 		Ar << bIsCriticalHit;
@@ -100,8 +99,8 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 	if (Ar.IsLoading())
 	{
 		AddInstigator(Instigator.Get(), EffectCauser.Get()); // Just to initialize InstigatorAbilitySystemComponent
-	}	
-	
+	}
+
 	bOutSuccess = true;
 	return true;
 }

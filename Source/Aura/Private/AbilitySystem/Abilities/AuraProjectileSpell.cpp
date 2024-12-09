@@ -52,10 +52,12 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		EffectContext.AddHitResult(HitResult);
 		Projectile->DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContext);
 
-		const float DamageValue = Damage.GetValueAtLevel(GetAbilityLevel());
-		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
-		//将tag与数值绑定
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(Projectile->DamageSpecHandle, GameplayTags.Damage, DamageValue);
+		for (auto Pair : DamageType)
+		{
+			const float DamageValue = Pair.Value.GetValueAtLevel(GetAbilityLevel());
+			//将tag与数值绑定
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(Projectile->DamageSpecHandle, Pair.Key, DamageValue);
+		}
 		
 		Projectile->FinishSpawning(SpawnTransform);
 	}

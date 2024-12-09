@@ -18,6 +18,11 @@ struct DamageStatic
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArcaneResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
+	
 	DamageStatic()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, Armor, Target, false);
@@ -26,7 +31,13 @@ struct DamageStatic
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitChance, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitDamage, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, FireResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, LightningResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ArcaneResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, PhysicalResistance, Target, false);
+		
 	}
+     		
 };
 
 //这个static函数用来存储捕获属性的内容
@@ -44,11 +55,28 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ArcaneResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagToAttributeDef;
+	FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_Armor, DamageStatics().ArmorDef);
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_ArmorPenetration, DamageStatics().ArmorPenetrationDef);
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_BlockChance, DamageStatics().BlockChanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_CriticalHitChance, DamageStatics().CriticalHitChanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_CriticalHitDamage, DamageStatics().CriticalHitDamageDef);
+	TagToAttributeDef.Add(Tags.Attributes_Secondary_CriticalHitResistance, DamageStatics().CriticalHitResistanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Resistance_Fire, DamageStatics().FireResistanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Resistance_Lightning, DamageStatics().LightningResistanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Resistance_Arcane, DamageStatics().ArcaneResistanceDef);
+	TagToAttributeDef.Add(Tags.Attributes_Resistance_Physical, DamageStatics().PhysicalResistanceDef);
+	
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 
@@ -61,7 +89,20 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	EvaluateParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	EvaluateParameters.SourceTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	/*//通过tag获取值*/
-	float Damage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
+	float Damage = 0.f;
+	//判断伤害类型，计算抗性减伤后的damage
+	for (auto Pair : FAuraGameplayTags::Get().DamageTypeToResistance)
+	{
+		float SingleDamage = Spec.GetSetByCallerMagnitude(Pair.Key, false);
+		if (SingleDamage > 0)
+		{
+			FGameplayEffectAttributeCaptureDefinition CaptureDef = TagToAttributeDef[Pair.Value];
+			float ResistanceValue = 0.f;
+			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluateParameters, ResistanceValue);
+			Damage = SingleDamage * (100 - ResistanceValue) / 100;
+			break;
+		}
+	}
 	
 	/*//获取属性值*/
 	float TargetBlockChance;

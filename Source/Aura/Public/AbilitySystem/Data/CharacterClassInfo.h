@@ -42,6 +42,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Default")
 	TSubclassOf<UGameplayEffect> SecondAttributes;
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Default")
+	TSubclassOf<UGameplayEffect> ResistanceAttributes;
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Default")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
 	FCharacterClassDefaultInfo GetCharacterDefaultInfoByClass(ECharacterClass CharacterClass);

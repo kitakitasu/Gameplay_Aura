@@ -74,8 +74,11 @@ void ABaseCharacter::InitAbilityActorInfo()
 
 void ABaseCharacter::InitializeAttributes()
 {
+	if (!HasAuthority()) return;
 	ApplyGameplayEffectToSelf(DefaultPrimaryAttributes, 1);
 	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitVitalAttributeInfo, 0.1f, true);
 }
 
@@ -103,6 +106,7 @@ void ABaseCharacter::InitCharacterAttributeInfo()
 
 void ABaseCharacter::InitVitalAttributeInfo()
 {
+	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
 	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
 	UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet);
 	if (AS->GetHealth() > 0.f)

@@ -71,6 +71,7 @@ public:
 	/*
 	 * Primary Values
 	 */
+	//力量
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Health, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength);
@@ -122,19 +123,40 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Health, Category = "Secondary Attributes")
 	FGameplayAttributeData ManaRegeneration;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration);
+	//最大生命
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MaxHealth, Category = "Vital Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth);
+	//最大法力
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MaxMana, Category = "Vital Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
 	
+	/*
+	 * Damage Resistance
+	 */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_FireResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_LightningResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_ArcaneResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ArcaneResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcaneResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_PhysicalResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalResistance);
 	/*
 	 * Vital Values
 	 */
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health);
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
@@ -175,6 +197,15 @@ public:
 	void OnRep_MaxHealth(FGameplayAttributeData& OldMaxHealth) const;
 	UFUNCTION()
 	void OnRep_MaxMana(FGameplayAttributeData& OldMaxMana) const;
+
+	UFUNCTION()
+	void OnRep_FireResistance(FGameplayAttributeData& OldFireResistance) const;
+	UFUNCTION()
+	void OnRep_LightningResistance(FGameplayAttributeData& OldLightningResistance) const;
+	UFUNCTION()
+	void OnRep_ArcaneResistance(FGameplayAttributeData& OldArcaneResistance) const;
+	UFUNCTION()
+	void OnRep_PhysicalResistance(FGameplayAttributeData& OldPhysicalResistance) const;
 	
 	UFUNCTION()
 	void OnRep_Health(FGameplayAttributeData& OldHealth) const;
@@ -186,5 +217,5 @@ public:
 	private:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Prop) const;
 
-	void ShowDamageText(const FEffectProperties& Props, float Damage, bool bIsBlocked, bool bIsCritical);
+	void ShowDamageText(const FEffectProperties& Props, FGameplayTag DamageType, float Damage, bool bIsBlocked, bool bIsCritical);
 };

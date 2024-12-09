@@ -59,16 +59,16 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	AutoRunning();
 }
 
-void AAuraPlayerController::ShowDamageText_Implementation(float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical)
+void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical)
 {
-	if(IsValid(TargetCharacter) && DamageTextClass)
+	if(IsValid(TargetCharacter) && DamageTextClass && IsLocalController())
 	{
 		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
 		DamageText->RegisterComponent();
 		//DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		//DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());
-		DamageText->SetDamageText(DamageValue, bIsBlocked, bIsCritical);
+		DamageText->SetDamageText(DamageType, DamageValue, bIsBlocked, bIsCritical);
 	}
 }
 
