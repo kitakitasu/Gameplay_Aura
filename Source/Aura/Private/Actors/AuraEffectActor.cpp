@@ -16,6 +16,8 @@ AAuraEffectActor::AAuraEffectActor()
 
 void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
+	if(Target->ActorHasTag(FName("Enemy")) && !bIsEffectiveToEnemy) return;
+	
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
 	if (TargetASC == nullptr) return;
 
@@ -29,6 +31,11 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, TSubclassOf<UGameplay
 	if(bIsInfiniteEffect && InfiniteRemovePolicy == EEffectRemovePolicy::RemoveOnEndOverlay)
 	{
 		ActiveEffectHandles.Add(ActiveEffectHandle, TargetASC);
+	}
+	
+	if(!bIsInfiniteEffect)
+	{
+		Destroy();
 	}
 	
 }

@@ -9,7 +9,7 @@
 #include "AuraEnemy.generated.h"
 
 class UAnimMontage;
-
+class UBehaviorTree;
 class UWidgetComponent;
 /**
  * 
@@ -40,6 +40,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	/*
 	 * 属性初始化
@@ -53,6 +54,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	int32 PlayerLevel = 1;
 
+	/*
+	 * AI
+	 */
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+	
+	
 	/*
 	 * 死亡行为
 	 */

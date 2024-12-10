@@ -60,6 +60,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	EEffectRemovePolicy InfiniteRemovePolicy = EEffectRemovePolicy::RemoveOnEndOverlay;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Applied Effects")
+	bool bIsEffectiveToEnemy = false;
+
 	UPROPERTY()
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
