@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AI/AuraAIController.h"
 #include "Aura/Aura.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -46,9 +47,10 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	if(!HasAuthority()) return ;
-	AAuraAIController* AuraAIController = Cast<AAuraAIController>(NewController);
+	AuraAIController = Cast<AAuraAIController>(NewController);
 	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	AuraAIController->RunBehaviorTree(BehaviorTree);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRangedAttacker"),CharacterClass != ECharacterClass::Warrior);
 }
 
 void AAuraEnemy::InitializeHealthBar()
@@ -77,7 +79,9 @@ void AAuraEnemy::InitializeHealthBar()
 
 void AAuraEnemy::OnHitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
 {
-	if (NewCount > 0)
+	const bool bHitReact = NewCount > 0;
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReact);
+	if (bHitReact)
 	{
 		WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = 0.f;

@@ -8,6 +8,7 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class AAuraAIController;
 class UAnimMontage;
 class UBehaviorTree;
 class UWidgetComponent;
@@ -59,6 +60,7 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
+	TObjectPtr<AAuraAIController> AuraAIController;
 	
 	
 	/*
@@ -76,6 +78,5 @@ protected:
 
 private:
 	float WalkSpeed;
-
 	void InitializeHealthBar();
 };
