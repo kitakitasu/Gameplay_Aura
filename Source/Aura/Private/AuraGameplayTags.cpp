@@ -79,6 +79,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Physical"));
 	GameplayTags.DamageTypeToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 
+	/*
+	 * Ability Tags
+	 */
+	GameplayTags.Abilities_MeleeAttack =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.MeleeAttack"));
+	
+	/*
+	 *Effect Tags
+	 */
 	GameplayTags.Effects_HitReact =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effects.HitReact"));
 }

@@ -59,7 +59,13 @@ public:
 	FGameplayTag Damage_Lightning;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
-
+	/*
+	 * Ability Tags
+	 */
+	FGameplayTag Abilities_MeleeAttack;
+	/*
+	 * Effect Tags
+	 */
 	FGameplayTag Effects_HitReact;
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypeToResistance;
