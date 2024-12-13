@@ -144,3 +144,13 @@ int32 AAuraEnemy::GetPlayerLevel()
 {
 	return PlayerLevel;
 }
+
+void AAuraEnemy::SetCombatTarget_Implementation(AActor* TargetActor)
+{
+	CombatTarget = TargetActor;
+}
+
+AActor* AAuraEnemy::GetCombatTarget_Implementation()
+{
+	return CombatTarget;
+}
