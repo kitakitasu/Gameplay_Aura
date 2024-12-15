@@ -14,6 +14,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -36,6 +37,7 @@ void AAuraEnemy::BeginPlay()
 	if (HasAuthority())
 	{
 		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitializeVitalAttributes, 0.1f, true);
 	}
 	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
 		this,
@@ -80,7 +82,7 @@ void AAuraEnemy::InitializeHealthBar()
 void AAuraEnemy::OnHitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
 {
 	const bool bHitReact = NewCount > 0;
-	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReact);
+
 	if (bHitReact)
 	{
 		WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
@@ -89,6 +91,10 @@ void AAuraEnemy::OnHitReactTagChanged(const FGameplayTag CallBackTag, int32 NewC
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
+	if (AuraAIController && HasAuthority()) //客户端里的AIController是空的
+	{
+		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReact);
 	}
 }
 
@@ -111,11 +117,24 @@ void AAuraEnemy::InitializeVitalAttributes()
 {
 	if (!HasAuthority()) return;
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
+	if (UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(GetAttributeSet()))
+	{
+		float Health = AuraAttributeSet->GetHealth();
+		if (Health != 0)
+		{
+			GetWorldTimerManager().ClearTimer(TimerHandle);
+		}
+	}
 }
 
 void AAuraEnemy::Die()
 {
 	Super::Die();
+	ClientDie();
+}
+
+void AAuraEnemy::ClientDie_Implementation()
+{
 	SetLifeSpan(LifeSpan);
 	DissolveMesh();
 }

@@ -30,6 +30,8 @@ public:
 	
 	UFUNCTION(Client, Reliable)
     void ShowDamageText(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical);
+
+	void SetAutoRunning(bool bShouldAutoRun);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

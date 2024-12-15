@@ -28,11 +28,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; };
 
-	virtual FVector GetWeaponSocketLocation() override;
-
+	/* CombatInterface */
+	virtual FVector GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual void Die() override;
+	/* end CombatInterface */
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
 	
@@ -44,46 +45,30 @@ protected:
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Character Default")
-	ECharacterClass CharacterClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Character Default")
-	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
-	//发射物会从这个WeaponTipSocket出来
-	UPROPERTY(EditAnywhere, Category = "Combat")
+
+	/*
+	 * 需要在蓝图中编辑以初始化的变量
+	 */
+	/* 攻击 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FTaggedMontage> AttackMontages;
+	UPROPERTY(EditAnywhere, Category = "Initialization|Combat")
 	FName WeaponTipSocketName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> DefaultResistanceAttributes;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-    TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	UPROPERTY(EditAnywhere, Category = "Initialization|Combat")
+	FName LeftHandSocketName;
+	UPROPERTY(EditAnywhere, Category = "Initialization|Combat")
+	FName RightHandSocketName;
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	virtual void InitializeAttributes();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Initialization|Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UFUNCTION(BlueprintCallable, Category = "Initialization|Attributes")
+	virtual void InitializeAttributes();
 	UFUNCTION()
 	void AddCharacterAbilities();
-	
-private:
-	void ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
-	//不知道为什么VitalAttribute不能和Primary,Secondary属性一起初始化，实在找不到bug出在哪了，
-	//这里就直接暴力循环初始化直到初始化成功，就停止循环
-	FTimerHandle TimerHandle;
-	void InitCharacterAttributeInfo();
-	void InitVitalAttributeInfo();
-	
 };

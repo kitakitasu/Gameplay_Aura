@@ -4,13 +4,13 @@
 #include "Character/AuraCharacter.h"
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
-#include "Game/AuraGameModeBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 
+class UAuraAttributeSet;
 class UCharacterClassInfo;
 
 AAuraCharacter::AAuraCharacter()
@@ -61,5 +61,36 @@ void AAuraCharacter::InitAbilityActorInfo()
 	}
 	
 	InitializeAttributes();
+}
+
+void AAuraCharacter::InitializeAttributes()
+{
+	if (!HasAuthority()) return;
+	ApplyGameplayEffectToSelf(DefaultPrimaryAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitVitalAttributeInfo, 0.1f, true);
+}
+
+void AAuraCharacter::ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& AttributeEffect, float Level) const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(AttributeEffect);
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(AttributeEffect, Level, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void AAuraCharacter::InitVitalAttributeInfo()
+{
+	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
+	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
+	UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet);
+	if (AS->GetHealth() > 0.f)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	}
 }
 

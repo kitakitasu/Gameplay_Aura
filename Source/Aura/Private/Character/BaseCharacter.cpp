@@ -4,6 +4,7 @@
 #include "Character/BaseCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
@@ -33,14 +34,32 @@ UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-FVector ABaseCharacter::GetWeaponSocketLocation()
+FVector ABaseCharacter::GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	if (Weapon && MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	return FVector();
 }
 
 UAnimMontage* ABaseCharacter::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
+}
+
+TArray<FTaggedMontage> ABaseCharacter::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
 }
 
 void ABaseCharacter::Die()
@@ -74,12 +93,6 @@ void ABaseCharacter::InitAbilityActorInfo()
 
 void ABaseCharacter::InitializeAttributes()
 {
-	if (!HasAuthority()) return;
-	ApplyGameplayEffectToSelf(DefaultPrimaryAttributes, 1);
-	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes, 1);
-	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
-	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitVitalAttributeInfo, 0.1f, true);
 }
 
 void ABaseCharacter::AddCharacterAbilities()
@@ -87,31 +100,5 @@ void ABaseCharacter::AddCharacterAbilities()
 	if(!HasAuthority()) return;
 	UAuraAbilitySystemComponent* AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraAbilitySystemComponent->AddCharacterAbilities(StartupAbilities);
-}
-
-void ABaseCharacter::ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const
-{
-	check(IsValid(GetAbilitySystemComponent()));
-	check(AttributeEffect);
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	ContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(AttributeEffect, Level, ContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-}
-
-void ABaseCharacter::InitCharacterAttributeInfo()
-{
-	
-}
-
-void ABaseCharacter::InitVitalAttributeInfo()
-{
-	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
-	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
-	UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet);
-	if (AS->GetHealth() > 0.f)
-	{
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-	}
 }
 

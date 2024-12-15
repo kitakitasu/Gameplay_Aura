@@ -23,6 +23,23 @@ public:
 	virtual int32 GetPlayerLevel() override;
 	/** ~End CombatInterface */
 
-	private:
 	virtual void InitAbilityActorInfo() override;
+	virtual void InitializeAttributes() override;
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")
+	TSubclassOf<UGameplayEffect> DefaultResistanceAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+private:
+	void ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& AttributeEffect, float Level) const;
+
+	//不知道为什么VitalAttribute不能和Primary,Secondary属性一起初始化，实在找不到bug出在哪了，
+	//这里就直接暴力循环初始化直到初始化成功，就停止循环
+	FTimerHandle TimerHandle;
+	void InitVitalAttributeInfo();
 };

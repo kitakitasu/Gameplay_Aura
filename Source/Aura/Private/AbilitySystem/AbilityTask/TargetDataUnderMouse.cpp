@@ -4,6 +4,7 @@
 #include "AbilitySystem/AbilityTask/TargetDataUnderMouse.h"
 
 #include "AbilitySystemComponent.h"
+#include "SWarningOrErrorBox.h"
 
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
@@ -15,8 +16,7 @@ UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGamepl
 void UTargetDataUnderMouse::Activate()
 {
 	Super::Activate();
-	bool bIsLocallyControlled = Ability->GetCurrentActorInfo()->IsLocallyControlled();
-	if(bIsLocallyControlled)
+	if(Ability->GetCurrentActorInfo()->IsLocallyControlled())
 	{
 		SendMouseCursorData();
 	}

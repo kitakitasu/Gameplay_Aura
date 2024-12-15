@@ -32,11 +32,13 @@ public:
 	virtual AActor* GetCombatTarget_Implementation() override;
 	/** ~End CombatInterface*/
 
-	UPROPERTY(BlueprintAssignable, Category = "Widget")
+	/*
+	 * UI
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Initialization|Widget")
 	FOnAttributeChangedSignature OnHealthChangeDelegate;
-	UPROPERTY(BlueprintAssignable, Category = "Widget")
+	UPROPERTY(BlueprintAssignable, Category = "Initialization|Widget")
 	FOnAttributeChangedSignature OnMaxHealthChangeDelegate;
-
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
 	
@@ -51,11 +53,14 @@ protected:
 	 */
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Initialization|CharacterClass")
+	ECharacterClass CharacterClass;
 	//Vital的初始化不知道为什么在前两帧会失败，只好把这个的初始化延迟，这个函数是在BaseEnemy蓝图中调用了
 	UFUNCTION(BlueprintCallable, Category = "Initialization")
 	void InitializeVitalAttributes();
+	FTimerHandle TimerHandle;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Combat")
 	int32 PlayerLevel = 1;
 
 	/*
@@ -65,18 +70,19 @@ protected:
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	TObjectPtr<AAuraAIController> AuraAIController;
 	
-	
 	/*
 	 * 死亡行为
 	 */
 	virtual void Die() override;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Death")
+	UFUNCTION(Client, Unreliable)
+	void ClientDie();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Death")
 	float LifeSpan = 5.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Death")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization|Death")
 	TObjectPtr<UMaterialInstance> DissolveMesh_MI;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Death")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization|Death")
 	TObjectPtr<UMaterialInstance> DissolveWeaponMesh_MI;
-	UFUNCTION(BlueprintImplementableEvent, Category = "Death")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Initialization|Death")
 	void DissolveMesh();
 
 private:

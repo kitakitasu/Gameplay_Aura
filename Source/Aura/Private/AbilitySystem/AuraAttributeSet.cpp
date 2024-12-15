@@ -141,6 +141,11 @@ void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, FGameplay
 	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->GetController()))
 	{
 		PC->ShowDamageText(DamageType, Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);
+		return;
+	}
+	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->GetController()))
+	{
+		PC->ShowDamageText(DamageType, Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);
 	}
 }
 
@@ -269,17 +274,17 @@ void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallb
 	if(IsValid(Prop.SourceAsc) && Prop.SourceAsc->AbilityActorInfo.IsValid() && Prop.SourceAsc->AbilityActorInfo->AvatarActor.IsValid())
 	{
 		Prop.SourceAvatarActor = Prop.SourceAsc->AbilityActorInfo->AvatarActor.Get();
-		const AController* SourceController = Prop.SourceAsc->AbilityActorInfo->PlayerController.Get();
-		if(SourceController == nullptr && Prop.SourceAvatarActor != nullptr)
+		Prop.SourceController = Prop.SourceAsc->AbilityActorInfo->PlayerController.Get();
+		if(Prop.SourceController == nullptr && Prop.SourceAvatarActor != nullptr)
 		{
 			if(APawn* Pawn = Cast<APawn>(Prop.SourceAvatarActor))
 			{
 				Prop.SourceController = Pawn->GetController();
 			}
 		}
-		if(SourceController)
+		if(Prop.SourceController != nullptr)
 		{
-			Prop.SourceCharacter = Cast<ACharacter>(SourceController->GetPawn());	
+			Prop.SourceCharacter = Cast<ACharacter>(Prop.SourceController->GetPawn());	
 		}
 	}
 

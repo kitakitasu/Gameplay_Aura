@@ -65,8 +65,6 @@ void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageTyp
 	{
 		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
 		DamageText->RegisterComponent();
-		//DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
-		//DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());
 		DamageText->SetDamageText(DamageType, DamageValue, bIsBlocked, bIsCritical);
 	}
@@ -214,3 +212,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 }
 
+void AAuraPlayerController::SetAutoRunning(bool bShouldAutoRun)
+{
+	bAutoRunning = bShouldAutoRun;
+}
