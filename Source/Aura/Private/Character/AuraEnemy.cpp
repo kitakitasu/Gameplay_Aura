@@ -54,6 +54,7 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	AuraAIController->RunBehaviorTree(BehaviorTree);
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRangedAttacker"),CharacterClass != ECharacterClass::Warrior);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsGiantAttacker"), bIsGiant);
 }
 
 void AAuraEnemy::InitializeHealthBar()

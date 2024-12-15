@@ -62,6 +62,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Combat")
 	int32 PlayerLevel = 1;
+	UPROPERTY(EditAnywhere, Category = "Initialization|Combat")
+	bool bIsGiant;
 
 	/*
 	 * AI
