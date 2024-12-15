@@ -20,6 +20,7 @@
 
 AAuraEnemy::AAuraEnemy()
 {
+	bReplicates = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystem_Component");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
@@ -130,11 +131,6 @@ void AAuraEnemy::InitializeVitalAttributes()
 void AAuraEnemy::Die()
 {
 	Super::Die();
-	ClientDie();
-}
-
-void AAuraEnemy::ClientDie_Implementation()
-{
 	SetLifeSpan(LifeSpan);
 	DissolveMesh();
 }
