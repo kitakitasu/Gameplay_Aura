@@ -135,3 +135,10 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	}
 }
 
+bool UAuraAbilitySystemLibrary::IsFriend(const AActor* FirstActor, const AActor* SecondActor)
+{
+	bool BothEnemy = FirstActor->ActorHasTag("Enemy") && SecondActor->ActorHasTag("Enemy");
+	bool BothPlayer = FirstActor->ActorHasTag("Player") && SecondActor->ActorHasTag("Player");
+	return BothEnemy || BothPlayer;
+}
+

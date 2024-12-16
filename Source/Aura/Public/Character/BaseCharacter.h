@@ -67,7 +67,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Initialization|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	
-	UFUNCTION(BlueprintCallable, Category = "Initialization|Attributes")
+	UFUNCTION(Category = "Initialization|Attributes")
 	virtual void InitializeAttributes();
 	UFUNCTION()
 	void AddCharacterAbilities();

@@ -133,6 +133,11 @@ void AAuraEnemy::Die()
 {
 	Super::Die();
 	SetLifeSpan(LifeSpan);
+	MulticastDie();
+}
+
+void AAuraEnemy::MulticastDie_Implementation()
+{
 	DissolveMesh();
 }
 

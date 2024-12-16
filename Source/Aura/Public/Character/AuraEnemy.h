@@ -76,6 +76,8 @@ protected:
 	 * 死亡行为
 	 */
 	virtual void Die() override;
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDie();
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Death")
 	float LifeSpan = 5.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization|Death")
