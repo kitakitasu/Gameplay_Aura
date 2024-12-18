@@ -35,6 +35,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 void AAuraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
+	//给客户端初始化GAS
 	InitAbilityActorInfo();
 }
 

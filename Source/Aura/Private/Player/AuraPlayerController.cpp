@@ -17,7 +17,6 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
-
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
@@ -59,17 +58,6 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	AutoRunning();
 }
 
-void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical)
-{
-	if(IsValid(TargetCharacter) && DamageTextClass && IsLocalController())
-	{
-		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
-		DamageText->RegisterComponent();
-		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());
-		DamageText->SetDamageText(DamageType, DamageValue, bIsBlocked, bIsCritical);
-	}
-}
-
 void AAuraPlayerController::AutoRunning()
 {
 	if (!bAutoRunning) return;
@@ -83,6 +71,17 @@ void AAuraPlayerController::AutoRunning()
 		{
 			bAutoRunning = false;
 		}
+	}
+}
+
+void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical)
+{
+	if(IsValid(TargetCharacter) && DamageTextClass && IsLocalController())
+	{
+		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
+		DamageText->RegisterComponent();
+		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());
+		DamageText->SetDamageText(DamageType, DamageValue, bIsBlocked, bIsCritical);
 	}
 }
 
@@ -107,23 +106,6 @@ void AAuraPlayerController::CursorTrace()
 		if (LastActor) LastActor->UnHighLightActor();
 		if (ThisActor) ThisActor->HighLightActor();
 	}
-}
-
-void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
-{
-	const FVector2d InputAxisVector = InputActionValue.Get<FVector2D>();	
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0, GetControlRotation().Yaw, 0);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
-
-	if(APawn* ControlledPawn = GetPawn<APawn>())
-	{
-		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
-	}
-
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)

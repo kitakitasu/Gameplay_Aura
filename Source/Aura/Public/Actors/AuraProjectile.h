@@ -19,6 +19,7 @@ class AURA_API AAuraProjectile : public AActor
 	
 public:	
 	AAuraProjectile();
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = true))
@@ -32,6 +33,8 @@ protected:
 	virtual void Destroyed() override;
 
 	UPROPERTY(EditAnywhere)
+	TObjectPtr<USphereComponent> Sphere;
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> BoomNiagara;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> BoomSound;
@@ -43,7 +46,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float LifeTime = 10.f;
 
+	
+	
 private:
-	TObjectPtr<USphereComponent> Sphere;
+	
 	bool bHit = false;
 };

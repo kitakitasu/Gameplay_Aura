@@ -38,8 +38,8 @@ void AAuraEnemy::BeginPlay()
 	if (HasAuthority())
 	{
 		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitializeVitalAttributes, 0.1f, true);
 	}
+	
 	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
 		this,
 		&AAuraEnemy::OnHitReactTagChanged
@@ -113,6 +113,7 @@ void AAuraEnemy::InitAbilityActorInfo()
 void AAuraEnemy::InitializeAttributes()
 {
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitializeVitalAttributes, 0.1f, true);
 }
 
 void AAuraEnemy::InitializeVitalAttributes()

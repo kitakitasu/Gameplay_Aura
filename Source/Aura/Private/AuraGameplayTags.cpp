@@ -48,6 +48,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.LMB"));
 	GameplayTags.Input_1 =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.1"));
+	GameplayTags.Input_2 =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.2"));
+	GameplayTags.Input_3 =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.3"));
+	GameplayTags.Input_4 =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.4"));
+	GameplayTags.Input_Q =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Q"));
+	GameplayTags.Input_W =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.W"));
+	GameplayTags.Input_E =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.E"));
+	GameplayTags.Input_R =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.R"));
+	
 
 	/*
 	 * Damage Resistance

@@ -14,8 +14,8 @@ class AURA_API UAuraGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 public:
-	//激活这个Ability的输入按键的Tag
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	//激活这个Ability的输入按键的InputTag
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
 
 protected:

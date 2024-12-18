@@ -7,7 +7,7 @@
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
-	//OnGameplayEffectAppliedDelegateToSelf只会在客户端调用，所以这里绑定RPC函数来保证客户端也能调用
+	//OnGameplayEffectAppliedDelegateToSelf只会在服务端调用，所以这里绑定RPC函数来保证客户端也能调用
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::ClientEffectApplied);
 }
 

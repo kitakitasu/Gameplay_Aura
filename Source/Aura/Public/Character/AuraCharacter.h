@@ -17,6 +17,7 @@ public:
 	AAuraCharacter();
 
 	virtual void PossessedBy(AController* NewController) override;
+	/** PlayerState Replication Notification Callback */
 	virtual void OnRep_PlayerState() override;
 
 	/** ~Begin CombatInterface */
@@ -25,7 +26,11 @@ public:
 
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() override;
+	
 protected:
+	/*
+	 * 用于初始化各属性的GameplayEffect class
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Attributes")

@@ -44,6 +44,15 @@ public:
 	FGameplayTag Input_RMB;
 	FGameplayTag Input_LMB;
 	FGameplayTag Input_1;
+	FGameplayTag Input_2;
+	FGameplayTag Input_3;
+	FGameplayTag Input_4;
+	FGameplayTag Input_Q;
+	FGameplayTag Input_W;
+	FGameplayTag Input_E;
+	FGameplayTag Input_R;
+	FGameplayTag Input_A;
+	FGameplayTag Input_S;
 	/*
 	 * Damage Resistance
 	 */

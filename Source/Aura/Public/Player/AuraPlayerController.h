@@ -37,19 +37,16 @@ protected:
 	virtual void SetupInputComponent() override;
 	virtual void PlayerTick(float DeltaTime) override;
 
-	
-	
 private:
 
 	void AutoRunning();
 	
 	void CursorTrace();
-	void Move(const struct FInputActionValue& InputActionValue);
-
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 
+	//用于类内使用
 	UAuraAbilitySystemComponent* GetASC();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")

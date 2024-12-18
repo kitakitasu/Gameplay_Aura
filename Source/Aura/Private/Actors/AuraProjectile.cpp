@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -41,7 +42,8 @@ void AAuraProjectile::BeginPlay()
 void AAuraProjectile::OnSphereOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(GetOwner() == OtherActor) return;
+	//如果碰到Owner或者碰到Owner同阵营Actor就之间return
+	if(GetOwner() == OtherActor || UAuraAbilitySystemLibrary::IsFriend(GetOwner(), OtherActor)) return;
 	// 如果卡了，FlyAudio可能在生成之前就触发Overlay事件
 	if(FlyAudioComponent)
 	{

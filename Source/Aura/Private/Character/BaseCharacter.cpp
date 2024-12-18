@@ -6,12 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
-#include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
-#include "Game/AuraGameModeBase.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
