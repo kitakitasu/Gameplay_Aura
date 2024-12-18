@@ -58,6 +58,11 @@ TArray<FTaggedMontage> ABaseCharacter::GetAttackMontages_Implementation()
 	return AttackMontages;
 }
 
+UNiagaraSystem* ABaseCharacter::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
 void ABaseCharacter::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));

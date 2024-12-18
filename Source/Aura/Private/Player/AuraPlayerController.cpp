@@ -78,6 +78,7 @@ void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageTyp
 {
 	if(IsValid(TargetCharacter) && DamageTextClass && IsLocalController())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%d"), IsLocalController());
 		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
 		DamageText->RegisterComponent();
 		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());

@@ -27,7 +27,6 @@ public:
 	AAuraEnemy();
 	/** ~Begin CombatInterface */
 	virtual int32 GetPlayerLevel() override;
-
 	virtual void SetCombatTarget_Implementation(AActor* TargetActor) override;
 	virtual AActor* GetCombatTarget_Implementation() override;
 	/** ~End CombatInterface*/

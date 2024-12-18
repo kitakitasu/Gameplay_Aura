@@ -32,6 +32,7 @@ public:
 	virtual FVector GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	virtual void Die() override;
 	/* end CombatInterface */
 	UFUNCTION(NetMulticast, Reliable)
@@ -66,6 +67,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Initialization|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Initialization|Combat")
+	TObjectPtr<UNiagaraSystem> BloodEffect = nullptr;
 	
 	UFUNCTION(Category = "Initialization|Attributes")
 	virtual void InitializeAttributes();

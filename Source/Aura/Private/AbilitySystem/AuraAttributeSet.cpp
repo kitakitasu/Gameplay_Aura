@@ -143,6 +143,7 @@ void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, FGameplay
 		PC->ShowDamageText(DamageType, Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);
 		return;
 	}
+	//如果攻击来自于AI,AIController不能转为AuraPlayerController就用TargetCharacter
 	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->GetController()))
 	{
 		PC->ShowDamageText(DamageType, Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);

@@ -130,18 +130,6 @@ void AAuraEnemy::InitializeVitalAttributes()
 	}
 }
 
-void AAuraEnemy::Die()
-{
-	Super::Die();
-	SetLifeSpan(LifeSpan);
-	MulticastDie();
-}
-
-void AAuraEnemy::MulticastDie_Implementation()
-{
-	DissolveMesh();
-}
-
 /*
  * EnemyInterface 
  */
@@ -167,6 +155,7 @@ int32 AAuraEnemy::GetPlayerLevel()
 	return PlayerLevel;
 }
 
+
 void AAuraEnemy::SetCombatTarget_Implementation(AActor* TargetActor)
 {
 	CombatTarget = TargetActor;
@@ -175,4 +164,17 @@ void AAuraEnemy::SetCombatTarget_Implementation(AActor* TargetActor)
 AActor* AAuraEnemy::GetCombatTarget_Implementation()
 {
 	return CombatTarget;
+}
+
+void AAuraEnemy::Die()
+{
+	Super::Die();
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+	SetLifeSpan(LifeSpan);
+	MulticastDie();
+}
+
+void AAuraEnemy::MulticastDie_Implementation()
+{
+	DissolveMesh();
 }
