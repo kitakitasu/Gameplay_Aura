@@ -35,9 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UNiagaraSystem> BoomNiagara;
+	TObjectPtr<UNiagaraSystem> ImpactNiagara;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<USoundBase> BoomSound;
+	TObjectPtr<USoundBase> ImpactSound;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> FlySound;
 	

@@ -21,6 +21,9 @@ struct FTaggedMontage
 	FGameplayTag MontageTag;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FGameplayTag CombatSocketTag;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	USoundBase* ImpactSound;
 };
 

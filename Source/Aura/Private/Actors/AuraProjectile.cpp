@@ -49,8 +49,8 @@ void AAuraProjectile::OnSphereOverlay(UPrimitiveComponent* OverlappedComponent, 
 	{
 		FlyAudioComponent.Get()->Stop();
 	}
-	UGameplayStatics::PlaySoundAtLocation(this, BoomSound, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, BoomNiagara, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
 	bHit = true;
 	if(HasAuthority())
 	{
@@ -67,8 +67,8 @@ void AAuraProjectile::Destroyed()
 	if(bHit && !HasAuthority())
 	{
 		if (FlyAudioComponent) FlyAudioComponent->Stop();
-		UGameplayStatics::PlaySoundAtLocation(this, BoomSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, BoomNiagara, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
 	}
 	Super::Destroyed();
 }
