@@ -69,9 +69,11 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 	/*
-	 * Ability Tags
+	 * Abilities Tags
 	 */
-	FGameplayTag Abilities_MeleeAttack;
+	FGameplayTag Abilities_Attack;
+	FGameplayTag Abilities_GiantAttack;
+	FGameplayTag Abilities_Summon;
 	/*
 	 * Effect Tags
 	 */

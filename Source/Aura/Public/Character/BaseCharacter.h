@@ -33,6 +33,8 @@ public:
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual int32 GetCallableMinionNum_Implementation() override;
+	virtual void IncreaseMinionNum_Implementation(int32 Num) override;
 	virtual void Die() override;
 	/* end CombatInterface */
 	UFUNCTION(NetMulticast, Reliable)
@@ -61,6 +63,11 @@ protected:
 	FName LeftHandSocketName;
 	UPROPERTY(EditAnywhere, Category = "Initialization|Combat")
 	FName RightHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Initialization|Summon")
+	int32 MaxMinionNum = 0;
+	UPROPERTY(BlueprintReadWrite ,Category = "Summon")
+	int32 CurrentMinionNum = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;

@@ -63,10 +63,25 @@ UNiagaraSystem* ABaseCharacter::GetBloodEffect_Implementation()
 	return BloodEffect;
 }
 
+int32 ABaseCharacter::GetCallableMinionNum_Implementation()
+{
+	return MaxMinionNum - CurrentMinionNum;
+}
+
+void ABaseCharacter::IncreaseMinionNum_Implementation(int32 Num)
+{
+	CurrentMinionNum = FMath::Clamp(CurrentMinionNum + Num, 0, MaxMinionNum);
+}
+
 void ABaseCharacter::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	MulticastHandleDeath();
+	if (GetOwner())
+	{
+		ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetOwner());
+		CombatInterface->IncreaseMinionNum_Implementation(-1);
+	}
 }
 
 void ABaseCharacter::MulticastHandleDeath_Implementation()

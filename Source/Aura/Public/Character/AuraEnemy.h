@@ -29,6 +29,7 @@ public:
 	virtual int32 GetPlayerLevel() override;
 	virtual void SetCombatTarget_Implementation(AActor* TargetActor) override;
 	virtual AActor* GetCombatTarget_Implementation() override;
+	virtual void Die() override;
 	/** ~End CombatInterface*/
 
 	/*
@@ -74,7 +75,6 @@ protected:
 	/*
 	 * 死亡行为
 	 */
-	virtual void Die() override;
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDie();
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Death")

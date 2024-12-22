@@ -95,10 +95,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypeToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 
 	/*
-	 * Ability Tags
+	 * Abilities Tags
 	 */
-	GameplayTags.Abilities_MeleeAttack =
-		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.MeleeAttack"));
+	GameplayTags.Abilities_Attack =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Attack"));
+	GameplayTags.Abilities_GiantAttack =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.GiantAttack"));
+	GameplayTags.Abilities_Summon =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Summon"));
 	
 	/*
 	 *Effect Tags

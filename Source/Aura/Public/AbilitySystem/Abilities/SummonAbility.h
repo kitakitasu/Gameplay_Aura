@@ -18,11 +18,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Summoning")
 	TArray<FVector> GetSpawnLocation();
+
+	UFUNCTION(BlueprintPure, Category = "Summoning")
+	TSubclassOf<APawn> GetRandomMinionClass();
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Summoning")
 	int32 NumMinions;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Summoning")
 	TArray<TSubclassOf<APawn>> MinionClasses;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Summoning")

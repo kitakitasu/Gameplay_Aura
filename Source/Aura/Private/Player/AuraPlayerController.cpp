@@ -77,8 +77,7 @@ void AAuraPlayerController::AutoRunning()
 void AAuraPlayerController::ShowDamageText_Implementation(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical)
 {
 	if(IsValid(TargetCharacter) && DamageTextClass && IsLocalController())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%d"), IsLocalController());
+	{ 
 		UDamageTextWidget* DamageText = NewObject<UDamageTextWidget>(TargetCharacter, DamageTextClass);
 		DamageText->RegisterComponent();
 		DamageText->SetWorldLocation(TargetCharacter->GetActorLocation());

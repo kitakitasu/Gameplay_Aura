@@ -63,6 +63,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UNiagaraSystem* GetBloodEffect();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 GetCallableMinionNum();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void IncreaseMinionNum(int32 Num);
 	
 	virtual void Die() = 0;
 };

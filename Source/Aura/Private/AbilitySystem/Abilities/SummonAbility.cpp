@@ -18,8 +18,20 @@ TArray<FVector> USummonAbility::GetSpawnLocation()
 	for(int32 i = 0; i < NumMinions; i++)
 	{
 		float SpawnDistance = FMath::RandRange(MinSpawnDistance, MaxSpawnDistance);
-		SpawnLocation.Add(Location + SpawnDistance * Direction);
+		FVector SpawnXYLocation = Location + SpawnDistance * Direction;
 		Direction = Direction.RotateAngleAxis(SpawnSpacerAngle, FVector::UpVector);
+		FHitResult Hit;
+		GetWorld()->LineTraceSingleByChannel(Hit, SpawnXYLocation + FVector(0, 0, 400), SpawnXYLocation - FVector(0, 0, 400), ECC_Visibility);
+		if (Hit.bBlockingHit)
+		{
+			SpawnLocation.Add(Hit.Location);
+		}
 	}
 	return SpawnLocation;
+}
+
+TSubclassOf<APawn> USummonAbility::GetRandomMinionClass()
+{
+	const int32 Index = FMath::RandRange(0, MinionClasses.Num() - 1);
+	return MinionClasses[Index];
 }
