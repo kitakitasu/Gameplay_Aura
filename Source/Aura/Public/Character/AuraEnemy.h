@@ -55,6 +55,8 @@ protected:
 	virtual void InitializeAttributes() override;
 	UPROPERTY(EditDefaultsOnly, Category = "Initialization|CharacterClass")
 	ECharacterClass CharacterClass;
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	
 	//Vital的初始化不知道为什么在前两帧会失败，只好把这个的初始化延迟，这个函数是在BaseEnemy蓝图中调用了
 	UFUNCTION(BlueprintCallable, Category = "Initialization")
 	void InitializeVitalAttributes();

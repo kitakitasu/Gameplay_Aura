@@ -88,7 +88,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	EvaluateParameters.SourceTags = Spec.CapturedTargetTags.GetAggregatedTags();
-	/*//通过tag获取值*/
+	/*通过tag获取值*/
 	float Damage = 0.f;
 	//判断伤害类型，计算抗性减伤后的damage
 	for (auto Pair : FAuraGameplayTags::Get().DamageTypeToResistance)
@@ -104,7 +104,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		}
 	}
 	
-	/*//获取属性值*/
+	/*获取属性值*/
 	float TargetBlockChance;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluateParameters, TargetBlockChance);
 	TargetBlockChance = FMath::Max(0.f, TargetBlockChance);

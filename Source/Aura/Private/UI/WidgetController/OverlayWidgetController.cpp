@@ -5,6 +5,9 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/AuraPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitalValues()
 {
@@ -27,20 +30,35 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
-		[this](const FGameplayTagContainer& AssetTags)
+	/*获取绑定PlayerState中的XP信息*/
+	AAuraPlayerState* AuraPS = Cast<AAuraPlayerState>(PlayerState);
+	AuraPS->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
+
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		/*技能UI信息*/
+		if (AuraASC->bStartupAbilitiesGiven) //如果GiveAbility已经执行过了就不需要等待直接调用
 		{
-			for(auto Tag : AssetTags)
+			OnInitializeStartupAbilities(AuraASC);
+		}
+		AuraASC->AbilitiesGivenDelegate.AddUObject(this, &ThisClass::OnInitializeStartupAbilities);
+
+		/*与物品交互显示信息(已经实现了但是我觉得不好用所以在游戏中没有用)*/
+		AuraASC->EffectAssetTags.AddLambda(
+			[this](const FGameplayTagContainer& AssetTags)
 			{
-				const FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag("Message");
-				if(Tag.MatchesTag(MessageTag))
+				for(auto Tag : AssetTags)
 				{
-					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
-					MessageWidgetRowDelegate.Broadcast(*Row);
+					const FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag("Message");
+					if(Tag.MatchesTag(MessageTag))
+					{
+						const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+						MessageWidgetRowDelegate.Broadcast(*Row);
+					}
 				}
 			}
-		}
-	);
+		);
+	}
 }
 
 /**
@@ -64,6 +82,34 @@ void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) c
 void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxManaChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::OnXPChanged(int32 NewXP)
+{
+	if (const AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+	{
+		const int32 Level = AuraPlayerState->GetPlayerLevel();
+		const int32 LevelUpXP = AuraPlayerState->LevelUpInfo->LevelUpData[Level].LevelUpRequirement;
+		const int32 PreviousLevelUpXP = AuraPlayerState->LevelUpInfo->LevelUpData[Level - 1].LevelUpRequirement;
+		XPForThisLevel = AuraPlayerState->GetXP();
+		XPRequirement = LevelUpXP - PreviousLevelUpXP;
+	}
+}
+
+void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC)
+{
+	if (!AuraASC->bStartupAbilitiesGiven) return;
+
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda(
+		[this, AuraASC](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoFromTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
+			Info.InputTag = AuraASC->GetInputTagFromAbility(AbilitySpec);
+			AbilityInfoDelegate.Broadcast(Info);
+		}
+	);
+	AuraASC->ForEachAbility(BroadcastDelegate);
 }
 /**
  * call back function end

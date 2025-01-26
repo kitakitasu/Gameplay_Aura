@@ -79,8 +79,10 @@ void ABaseCharacter::Die()
 	MulticastHandleDeath();
 	if (GetOwner())
 	{
-		ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetOwner());
-		CombatInterface->IncreaseMinionNum_Implementation(-1);
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetOwner()))
+		{
+			CombatInterface->IncreaseMinionNum_Implementation(-1);
+		}
 	}
 }
 
@@ -116,5 +118,6 @@ void ABaseCharacter::AddCharacterAbilities()
 	if(!HasAuthority()) return;
 	UAuraAbilitySystemComponent* AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraAbilitySystemComponent->AddCharacterAbilities(StartupAbilities);
+	AuraAbilitySystemComponent->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 }
 

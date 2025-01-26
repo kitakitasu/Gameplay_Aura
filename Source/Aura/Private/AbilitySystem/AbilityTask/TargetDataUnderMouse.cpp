@@ -63,6 +63,10 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		ValidData.Broadcast(DataHandle);
+
+
+
+		
 	}
 }
 

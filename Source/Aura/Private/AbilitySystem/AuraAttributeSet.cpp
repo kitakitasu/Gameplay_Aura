@@ -8,6 +8,7 @@
 #include "GameplayEffectExtension.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Aura/AuraLogChannels.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -99,6 +100,11 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 	}
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		UE_LOG(LogAura, Log, TEXT("Get XP : %d"), static_cast<int32>(GetIncomingXP()));
+		SetIncomingXP(0.f);
+	}
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float Damage = GetIncomingDamage();
@@ -120,6 +126,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				{
 					CombatInterface->Die();
 				}
+				AddXPEvent(Props);
 			}
 			FGameplayTag DamageType = FGameplayTag();
 			for (auto Pair : FAuraGameplayTags::Get().DamageTypeToResistance)
@@ -147,6 +154,23 @@ void UAuraAttributeSet::ShowDamageText(const FEffectProperties& Props, FGameplay
 	if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->GetController()))
 	{
 		PC->ShowDamageText(DamageType, Damage, Props.TargetCharacter, bIsBlocked, bIsCritical);
+	}
+}
+
+void UAuraAttributeSet::AddXPEvent(const FEffectProperties& Props)
+{
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter);
+	if (CombatInterface)
+	{
+		ECharacterClass CharacterClass = CombatInterface->GetCharacterClass_Implementation();
+		int32 Level = CombatInterface->GetPlayerLevel();
+		int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(Props.TargetCharacter, CharacterClass, Level);
+		
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		FGameplayEventData PayLoad;
+		PayLoad.EventMagnitude = XPReward;
+		PayLoad.EventTag = Tags.Attributes_Meta_IncomingXP;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceAvatarActor, Tags.Attributes_Meta_IncomingXP, PayLoad);
 	}
 }
 

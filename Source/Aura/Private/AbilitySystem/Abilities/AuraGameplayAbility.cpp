@@ -10,7 +10,7 @@ void UAuraGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
                                            const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if (bShouldStopMove && GetAvatarActorFromActorInfo()->ActorHasTag(FName("Player")))
+	if (bBlockMove && GetAvatarActorFromActorInfo()->ActorHasTag(FName("Player")))
 	{
 		if (APawn* Pawn = Cast<APawn>(GetAvatarActorFromActorInfo()))
 		{

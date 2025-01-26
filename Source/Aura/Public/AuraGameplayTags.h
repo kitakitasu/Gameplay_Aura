@@ -39,6 +39,11 @@ public:
 	FGameplayTag Attributes_Vital_Health;
 	FGameplayTag Attributes_Vital_Mana;
 	/*
+	 * Meta Attributes
+	 */
+	FGameplayTag Attributes_Meta_IncomingDamage;
+	FGameplayTag Attributes_Meta_IncomingXP;
+	/*
 	 * Input Tags
 	 */
 	FGameplayTag Input_RMB;
@@ -74,6 +79,7 @@ public:
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_GiantAttack;
 	FGameplayTag Abilities_Summon;
+	FGameplayTag Abilities_Fire_FireBolt;
 	/*
 	 * Effect Tags
 	 */

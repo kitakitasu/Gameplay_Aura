@@ -39,6 +39,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxHealth"));
 	GameplayTags.Attributes_Secondary_MaxMana =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxMana"));
+
+	/*
+	 * Meta Attribute Tags
+	 */
+	GameplayTags.Attributes_Meta_IncomingDamage =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Meta.IncomingDamage"));
+	GameplayTags.Attributes_Meta_IncomingXP =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Meta.IncomingXP"));
 	/*
 	 * Input Tags
 	 */
@@ -103,6 +111,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.GiantAttack"));
 	GameplayTags.Abilities_Summon =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Summon"));
+	GameplayTags.Abilities_Fire_FireBolt =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Fire.FireBolt"));
 	
 	/*
 	 *Effect Tags

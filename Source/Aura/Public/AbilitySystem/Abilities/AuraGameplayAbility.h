@@ -19,7 +19,8 @@ public:
 	FGameplayTag StartupInputTag;
 
 protected:
-	bool bShouldStopMove = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Move")
+	bool bBlockMove = true;
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	

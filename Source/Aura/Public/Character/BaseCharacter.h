@@ -71,6 +71,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Initialization|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Initialization|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;

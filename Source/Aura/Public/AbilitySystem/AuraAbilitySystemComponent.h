@@ -7,7 +7,10 @@
 #include "AuraAbilitySystemComponent.generated.h"
 
 class UAuraUserWidget;
+class UAuraAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsDelegate, const FGameplayTagContainer&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGivenSignature, UAuraAbilitySystemComponent*);
+DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
 /**
  * 
  */
@@ -17,17 +20,32 @@ class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 public:
-	void AbilityActorInfoSet();
+
+	bool bStartupAbilitiesGiven = false;
 	
 	FEffectAssetTagsDelegate EffectAssetTags;
+	FAbilitiesGivenSignature AbilitiesGivenDelegate;
 
+	static FGameplayTag GetAbilityTagFromSpec(FGameplayAbilitySpec AbilitySpec);
+	static FGameplayTag GetInputTagFromAbility(const FGameplayAbilitySpec& Spec);
+
+	void ForEachAbility(FForEachAbility Delegate);
+	
+	void AbilityActorInfoSet();
 	void AddCharacterAbilities(TArray<TSubclassOf<UGameplayAbility>> StartupAbilities);
+	void AddCharacterPassiveAbilities(TArray<TSubclassOf<UGameplayAbility>> StartupAbilities);
 
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 
 protected:
+	/* AddCharacterAbilities只会在Service中调用，此函数运行后改变ActivateAbilities，正好可以用这个OnRep函数来在Client中监测AddAbilities */
+	virtual void OnRep_ActivateAbilities() override;
+	
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 	
 };
+
+
+

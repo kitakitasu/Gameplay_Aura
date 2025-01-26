@@ -14,7 +14,6 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -114,6 +113,11 @@ void AAuraEnemy::InitializeAttributes()
 {
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitializeVitalAttributes, 0.1f, true);
+}
+
+ECharacterClass AAuraEnemy::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
 }
 
 void AAuraEnemy::InitializeVitalAttributes()

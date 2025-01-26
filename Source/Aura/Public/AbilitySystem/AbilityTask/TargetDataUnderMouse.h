@@ -15,6 +15,7 @@ class AURA_API UTargetDataUnderMouse : public UAbilityTask
 {
 	GENERATED_BODY()
 public:
+	/* 异步函数，实现获取鼠标在地面的位置，在Data */
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (DisplayName = "TargetDataUnderMouse", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
 	static UTargetDataUnderMouse* CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility);
 

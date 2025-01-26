@@ -164,9 +164,12 @@ public:
 	/*
 	 * Meta Values
 	 */
-	UPROPERTY(BlueprintReadOnly, Category = "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingXP;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXP);
 	
 	UFUNCTION()
 	void OnRep_Strength(FGameplayAttributeData& OldStrength) const;
@@ -218,4 +221,6 @@ public:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Prop) const;
 
 	void ShowDamageText(const FEffectProperties& Props, FGameplayTag DamageType, float Damage, bool bIsBlocked, bool bIsCritical);
+
+	void AddXPEvent(const FEffectProperties& Props);
 };
