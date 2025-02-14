@@ -6,7 +6,7 @@
 int32 ULevelUpInfo::FindLevelForXp(int32 XP)
 {
 	int32 level = 1;
-	while (XP - LevelUpData[level - 1].LevelUpRequirement > 0 && level <= LevelUpData.Num())
+	while (XP - LevelUpData[level].LevelUpRequirement > 0 && level <= LevelUpData.Num())
 	{
 		level++;
 	}

@@ -38,13 +38,18 @@ public:
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 
+	/* 用来在WidgetController中调用来增加属性 */
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
 protected:
 	/* AddCharacterAbilities只会在Service中调用，此函数运行后改变ActivateAbilities，正好可以用这个OnRep函数来在Client中监测AddAbilities */
 	virtual void OnRep_ActivateAbilities() override;
 	
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
-	
+
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
 };
 
 

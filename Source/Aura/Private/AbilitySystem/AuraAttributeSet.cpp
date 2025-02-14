@@ -10,6 +10,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/AuraPlayerController.h"
@@ -91,7 +92,6 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	Super::PostGameplayEffectExecute(Data);
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
-
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
@@ -102,17 +102,33 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	}
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
 	{
-		UE_LOG(LogAura, Log, TEXT("Get XP : %d"), static_cast<int32>(GetIncomingXP()));
+		int32 LocalIncomingXP = GetIncomingXP();
 		SetIncomingXP(0.f);
+		if (Props.SourceCharacter->Implements<UCombatInterface>() && Props.SourceCharacter->Implements<UPlayerInterface>())
+		{
+			int32 CurrentXP = IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+			//判断是否升级
+			const int32 CurrentLevel = Cast<ICombatInterface>(Props.SourceCharacter)->GetPlayerLevel();
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
+			const int32 LevelUpNum = NewLevel - CurrentLevel;
+			if (LevelUpNum > 0)
+			{
+				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, NewLevel, LevelUpNum);
+				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, NewLevel, LevelUpNum);
+				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, LevelUpNum);
+			}
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+		}
+		
 	}
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float Damage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
+		float NewHealth = GetHealth() - Damage;
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		if (Damage > 0.f)
 		{
-			float NewHealth = GetHealth() - Damage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 			const bool bIsFatal = NewHealth <= 0.f;
 			if (!bIsFatal)
 			{
@@ -128,7 +144,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				}
 				AddXPEvent(Props);
 			}
-			FGameplayTag DamageType = FGameplayTag();
+			const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+			FGameplayTag DamageType = Tags.Damage_Fire;
 			for (auto Pair : FAuraGameplayTags::Get().DamageTypeToResistance)
 			{
 				if (Data.EffectSpec.GetSetByCallerMagnitude(Pair.Key, false) > 0)

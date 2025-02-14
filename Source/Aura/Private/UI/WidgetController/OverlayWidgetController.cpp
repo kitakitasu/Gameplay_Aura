@@ -32,7 +32,25 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	/*获取绑定PlayerState中的XP信息*/
 	AAuraPlayerState* AuraPS = Cast<AAuraPlayerState>(PlayerState);
-	AuraPS->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
+	AuraPS->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+	AuraPS->OnLevelChangedDelegate.AddLambda(
+		[this](int32 NewLevel)
+		{
+			OnLevelChangedDelegate.Broadcast(NewLevel);
+		}
+	);
+	AuraPS->OnAttributePointsChangedDelegate.AddLambda(
+		[this](int32 NewAttributePoints)
+		{
+			OnAttributePointsChangedDelegate.Broadcast(NewAttributePoints);
+		}
+	);
+	AuraPS->OnSpellPointsChangedDelegate.AddLambda(
+		[this](int32 NewSpellPoints)
+		{
+			OnSpellPointsChangedDelegate.Broadcast(NewSpellPoints);
+		}
+	);
 
 	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
 	{
@@ -91,8 +109,10 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 		const int32 Level = AuraPlayerState->GetPlayerLevel();
 		const int32 LevelUpXP = AuraPlayerState->LevelUpInfo->LevelUpData[Level].LevelUpRequirement;
 		const int32 PreviousLevelUpXP = AuraPlayerState->LevelUpInfo->LevelUpData[Level - 1].LevelUpRequirement;
-		XPForThisLevel = AuraPlayerState->GetXP();
+		XPForThisLevel = AuraPlayerState->GetXP() - PreviousLevelUpXP;
 		XPRequirement = LevelUpXP - PreviousLevelUpXP;
+
+		OnXPPercentChangeDelegate.Broadcast(XPForThisLevel, XPRequirement);
 	}
 }
 

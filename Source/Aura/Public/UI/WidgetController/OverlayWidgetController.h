@@ -36,6 +36,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidge
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, ReturnValue);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnXPPercentChange, int32, XPForThisLevel, int32, XPRequirement);
+
 /**
  * 
  */
@@ -47,6 +51,10 @@ public:
 	virtual void BroadcastInitalValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
+	/** 通知widget的各个变量的delegate **/
+	UPROPERTY(BlueprintAssignable, Category = "GAS|XP")
+	FOnXPPercentChange OnXPPercentChangeDelegate;
+
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FOnAttributeChangedSignature OnHealthChanged;
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
@@ -55,7 +63,12 @@ public:
 	FOnAttributeChangedSignature OnManaChanged;
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FOnAttributeChangedSignature OnMaxManaChanged;
-
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Level")
+	FOnPlayerStatChangeSignature OnLevelChangedDelegate;
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnPlayerStatChangeSignature OnAttributePointsChangedDelegate;
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnPlayerStatChangeSignature OnSpellPointsChangedDelegate;
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Message")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 

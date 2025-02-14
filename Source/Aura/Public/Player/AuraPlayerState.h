@@ -44,8 +44,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	inline int32 GetXP() const { return XP; }
 
+	UFUNCTION(BlueprintCallable)
+	void SetSpellPoints(int32 NewSpellPoints);
+	UFUNCTION(BlueprintCallable)
+	void AddToSpellPoints(int32 InSpellPoints);
+	UFUNCTION(BlueprintCallable)
+	inline int32 GetSpellPoints() const { return SpellPoints; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetAttributePoints(int32 NewAttributePoints);
+	UFUNCTION(BlueprintCallable)
+	void AddToAttributePoints(int32 InAttributePoints);
+	UFUNCTION(BlueprintCallable)
+	inline int32 GetAttributePoints() const { return AttributePoints; }
+	
 	FOnValueChangedSignature OnXPChangedDelegate;
 	FOnValueChangedSignature OnLevelChangedDelegate;
+	FOnValueChangedSignature OnAttributePointsChangedDelegate;
+	FOnValueChangedSignature OnSpellPointsChangedDelegate;
 	
 protected:
 	UPROPERTY()
@@ -59,10 +75,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_XP)
 	int32 XP = 0;
 
-	UFUNCTION()
-	void OnRep_Level(int32 OldLevel);
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AttributePoints)
+	int32 AttributePoints = 0;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SpellPoints)
+	int32 SpellPoints = 0;
 
 	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
+	UFUNCTION()
 	void OnRep_XP(int32 OldXP);
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints);
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints);
 };
 

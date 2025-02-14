@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
 
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
 private:
 	void BroadcastAttributeInfo(const FGameplayTag Tag, const FGameplayAttribute& Attribute) const;
 };
