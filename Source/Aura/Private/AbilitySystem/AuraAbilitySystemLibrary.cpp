@@ -30,7 +30,7 @@ UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(
 			FUWidgetControllerParams WidgetParams = FUWidgetControllerParams(PC, PS, ASC, AS);
 			return AuraHUD->GetOverlayWidgetController(WidgetParams);
 		}
-	}
+	} 
 	return nullptr;
 }
 
