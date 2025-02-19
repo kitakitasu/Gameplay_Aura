@@ -57,9 +57,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		/*技能UI信息*/
 		if (AuraASC->bStartupAbilitiesGiven) //如果GiveAbility已经执行过了就不需要等待直接调用
 		{
-			OnInitializeStartupAbilities(AuraASC);
+			BroadcastAbilityInfo(AuraASC);
 		}
-		AuraASC->AbilitiesGivenDelegate.AddUObject(this, &ThisClass::OnInitializeStartupAbilities);
+		AuraASC->AbilitiesGivenDelegate.AddUObject(this, &ThisClass::BroadcastAbilityInfo);
 
 		/*与物品交互显示信息(已经实现了但是我觉得不好用所以在游戏中没有用)*/
 		AuraASC->EffectAssetTags.AddLambda(
@@ -116,21 +116,6 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 	}
 }
 
-void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC)
-{
-	if (!AuraASC->bStartupAbilitiesGiven) return;
-
-	FForEachAbility BroadcastDelegate;
-	BroadcastDelegate.BindLambda(
-		[this, AuraASC](const FGameplayAbilitySpec& AbilitySpec)
-		{
-			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoFromTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
-			Info.InputTag = AuraASC->GetInputTagFromAbility(AbilitySpec);
-			AbilityInfoDelegate.Broadcast(Info);
-		}
-	);
-	AuraASC->ForEachAbility(BroadcastDelegate);
-}
 /**
  * call back function end
  */

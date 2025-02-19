@@ -22,7 +22,7 @@ class AURA_API UAttributeMenuWidgetController : public UAuraWidgetController
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
+
 	virtual void BroadcastInitalValues() override;
 	virtual void BindCallbacksToDependencies() override;
 

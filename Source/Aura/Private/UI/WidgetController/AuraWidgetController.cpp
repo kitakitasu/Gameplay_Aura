@@ -3,6 +3,9 @@
 
 #include "UI/WidgetController/AuraWidgetController.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+
 void UAuraWidgetController::SetWidgetControllerParams(FUWidgetControllerParams Wcp)
 {
 	PlayerController = Wcp.PlayerController;
@@ -18,4 +21,20 @@ void UAuraWidgetController::BroadcastInitalValues()
 
 void UAuraWidgetController::BindCallbacksToDependencies()
 {
+}
+
+void UAuraWidgetController::BroadcastAbilityInfo(UAuraAbilitySystemComponent* AuraASC)
+{
+	if (!AuraASC->bStartupAbilitiesGiven) return;
+
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda(
+		[this, AuraASC](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoFromTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
+			Info.InputTag = AuraASC->GetInputTagFromAbility(AbilitySpec);
+			AbilityInfoDelegate.Broadcast(Info);
+		}
+	);
+	AuraASC->ForEachAbility(BroadcastDelegate);
 }

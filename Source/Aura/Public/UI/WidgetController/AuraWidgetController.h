@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "AuraWidgetController.generated.h"
 
+class UAuraAbilitySystemComponent;
+class UAbilityInfo;
 class UAbilitySystemComponent;
 class UAttributeSet;
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 /**
  * 
@@ -41,11 +42,14 @@ class AURA_API UAuraWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(FUWidgetControllerParams Wcp);
-	//可在HUD中初始化类的同时调用
+	/* 在Widget初始化时调用，在WidgetController中广播以获取所需值 */
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitalValues();
-	//同上
+	/* 在HUD中初始化此WidgetController的同时调用,绑定WidgetController中的各Delegate依赖 */
 	virtual void BindCallbacksToDependencies();
 
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Ability")
+	FAbilityInfoSignature AbilityInfoDelegate;
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
@@ -56,6 +60,11 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+	
+	void BroadcastAbilityInfo(UAuraAbilitySystemComponent* AuraASC);
 
 	
 };
