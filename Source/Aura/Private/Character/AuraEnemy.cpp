@@ -112,26 +112,11 @@ void AAuraEnemy::InitAbilityActorInfo()
 void AAuraEnemy::InitializeAttributes()
 {
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitializeVitalAttributes, 0.1f, true);
 }
 
 ECharacterClass AAuraEnemy::GetCharacterClass_Implementation()
 {
 	return CharacterClass;
-}
-
-void AAuraEnemy::InitializeVitalAttributes()
-{
-	if (!HasAuthority()) return;
-	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, PlayerLevel, AbilitySystemComponent);
-	if (UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(GetAttributeSet()))
-	{
-		float Health = AuraAttributeSet->GetHealth();
-		if (Health != 0)
-		{
-			GetWorldTimerManager().ClearTimer(TimerHandle);
-		}
-	}
 }
 
 /*

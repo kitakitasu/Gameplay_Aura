@@ -30,7 +30,7 @@ public:
 	
 	UFUNCTION(Client, Reliable)
     void ShowDamageText(FGameplayTag DamageType, float DamageValue, ACharacter* TargetCharacter, bool bIsBlocked, bool bIsCritical);
-
+	/* 用来在Ability触发时取消自动寻路，在AuraGameplayAbility中调用 */
 	void SetAutoRunning(bool bShouldAutoRun);
 protected:
 	virtual void BeginPlay() override;
@@ -54,15 +54,12 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> AuraContext;
-	
-	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> MoveAction;
 
 	IEnemyInterface* LastActor;
 	IEnemyInterface* ThisActor;
 
 	FHitResult CursorHit;
-
+	
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	/*
 	* Running Variables

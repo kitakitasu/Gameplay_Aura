@@ -58,16 +58,20 @@ void AAuraCharacter::AddToAttributePoints_Implementation(int32 NewLevel, int32 L
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
-
-	AuraPlayerState->AddToAttributePoints(LevelUpNum);
-	
-	//把升过的等级获取的点数累加
-	/*while (LevelUpNum)
+	if (LevelUpNum > 0)
 	{
-		int32 Points = AuraPlayerState->LevelUpInfo->LevelUpData[NewLevel - LevelUpNum].AttributePointReward;
-		AuraPlayerState->AddToAttributePoints(Points);
-		LevelUpNum -= 1;
-	}*/
+		//把升过的等级获取的点数累加
+		while (LevelUpNum)
+		{
+			int32 Points = AuraPlayerState->LevelUpInfo->LevelUpData[NewLevel - LevelUpNum].AttributePointReward;
+			AuraPlayerState->AddToAttributePoints(Points);
+			LevelUpNum -= 1;
+		}
+	}
+	else
+	{
+		AuraPlayerState->AddToAttributePoints(LevelUpNum);
+	}
 }
 
 void AAuraCharacter::AddToSpellPoints_Implementation(int32 NewLevel, int32 LevelUpNum)
@@ -75,14 +79,21 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 NewLevel, int32 Level
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
 	
-	AuraPlayerState->AddToSpellPoints(LevelUpNum);
-	//把升过的等级获取的点数累加
-	/*while (LevelUpNum)
+	if (LevelUpNum > 0)
 	{
-		int32 Points = AuraPlayerState->LevelUpInfo->LevelUpData[NewLevel - LevelUpNum].SpellPointReward;
-		AuraPlayerState->AddToSpellPoints(Points);
-		LevelUpNum -= 1;
-	}*/
+		//把升过的等级获取的点数累加
+		while (LevelUpNum)
+		{
+			int32 Points = AuraPlayerState->LevelUpInfo->LevelUpData[NewLevel - LevelUpNum].SpellPointReward;
+			AuraPlayerState->AddToSpellPoints(Points);
+			LevelUpNum -= 1;
+		}
+	}
+	else
+	{
+		AuraPlayerState->AddToSpellPoints(LevelUpNum);
+	}
+	
 }
 
 void AAuraCharacter::AddToPlayerLevel_Implementation(int32 LevelUpNum)
@@ -128,6 +139,15 @@ int32 AAuraCharacter::GetPlayerLevel()
 	return AuraPlayerState->GetPlayerLevel();
 }
 
+void AAuraCharacter::Die()
+{
+	Super::Die();
+	GetMesh()->SetAnimInstanceClass(nullptr);
+	GetMesh()->SetRelativeRotation(FRotator(0.f, 0.f, -90.f));
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	DisableInput(PlayerController);
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -153,7 +173,6 @@ void AAuraCharacter::InitializeAttributes()
 	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes, 1);
 	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
 	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::InitVitalAttributeInfo, 0.1f, true);
 }
 
 FVector AAuraCharacter::GetCameraLocation_Implementation()
@@ -193,15 +212,3 @@ void AAuraCharacter::MulticastLevelUp_Implementation()
 		UE_LOG(LogAura, Warning, TEXT("Player LevelUpRecover Effect doesn't set"));
 	}
 }
-
-void AAuraCharacter::InitVitalAttributeInfo()
-{
-	ApplyGameplayEffectToSelf(DefaultResistanceAttributes, 1);
-	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
-	UAuraAttributeSet* AS = Cast<UAuraAttributeSet>(AttributeSet);
-	if (AS->GetHealth() > 0.f)
-	{
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-	}
-}
-

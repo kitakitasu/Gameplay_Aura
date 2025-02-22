@@ -37,7 +37,6 @@ void AAuraPlayerController::BeginPlay()
 	InputData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputData);
-
 }
 
 void AAuraPlayerController::SetupInputComponent()
@@ -46,7 +45,6 @@ void AAuraPlayerController::SetupInputComponent()
 
 	check(AuraInputConfig);
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
-	//AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
 	AuraInputComponent->BindAbilityAction(AuraInputConfig, this, &ThisClass::AbilityInputTagPressed,
 		&ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }

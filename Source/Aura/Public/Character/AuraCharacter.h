@@ -36,6 +36,7 @@ public:
 
 	/** ~Begin CombatInterface */
 	virtual int32 GetPlayerLevel() override;
+	virtual void Die() override;
 	/** ~End CombatInterface */
 
 	virtual void InitAbilityActorInfo() override;
@@ -72,8 +73,4 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLevelUp();
 
-	//不知道为什么VitalAttribute不能和Primary,Secondary属性一起初始化，实在找不到bug出在哪了，
-	//这里就直接暴力循环初始化直到初始化成功，就停止循环
-	FTimerHandle TimerHandle;
-	void InitVitalAttributeInfo();
 };
