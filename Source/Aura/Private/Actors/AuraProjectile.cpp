@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+//#include "NiagaraFunctionLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
@@ -15,7 +16,6 @@
 
 AAuraProjectile::AAuraProjectile()
 {
-	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	SetRootComponent(Sphere);
@@ -50,25 +50,45 @@ void AAuraProjectile::OnSphereOverlay(UPrimitiveComponent* OverlappedComponent, 
 		FlyAudioComponent.Get()->Stop();
 	}
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
+	if (IsValid(ImpactNiagara))
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
+	}
+	if (IsValid(ImpactCascade))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactCascade, GetActorLocation());
+	}
 	bHit = true;
 	if(HasAuthority())
 	{
 		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+			ApplyRangeDamage(OtherActor);
 		}
 		Destroy();
 	}
 }
 
+void AAuraProjectile::ApplyRangeDamage_Implementation(AActor* HitActor)
+{
+}
+
 void AAuraProjectile::Destroyed()
 {
+	//防止客户端没触发，再确认一次
 	if(bHit && !HasAuthority())
 	{
 		if (FlyAudioComponent) FlyAudioComponent->Stop();
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
+		if (ImpactNiagara->IsValid())
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactNiagara, GetActorLocation());
+		}
+		if (IsValid(ImpactCascade))
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(this, ImpactCascade, GetActorLocation());
+		}
 	}
 	Super::Destroyed();
 }

@@ -19,8 +19,9 @@ class AURA_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	/* 如果有想要指定生成位置的就用StartLocation */
 	UFUNCTION(BlueprintCallable)
-	void SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& CombatSocket);
+	void SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& CombatSocket, FVector StartLocation);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AAuraProjectile> ProjectileClass;

@@ -19,7 +19,7 @@ class AURA_API AAuraProjectile : public AActor
 	
 public:	
 	AAuraProjectile();
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn = true))
@@ -30,12 +30,16 @@ protected:
 	UFUNCTION()
 	virtual void OnSphereOverlay(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION(BlueprintNativeEvent)
+	void ApplyRangeDamage(AActor* HitActor);
 	virtual void Destroyed() override;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactNiagara;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UParticleSystem> ImpactCascade; //有个特效是Cascade的，没办法绑NiagaraSystem
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> ImpactSound;
 	UPROPERTY(EditAnywhere)
