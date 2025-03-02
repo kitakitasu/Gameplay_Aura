@@ -2,10 +2,7 @@
 
 
 #include "AbilitySystem/AbilityTask/TargetDataUnderMouse.h"
-
 #include "AbilitySystemComponent.h"
-#include "SWarningOrErrorBox.h"
-
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -63,10 +60,6 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		ValidData.Broadcast(DataHandle);
-
-
-
-		
 	}
 }
 
