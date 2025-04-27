@@ -33,6 +33,7 @@ public:
 	void SetLevel(int32 NewLevel);
 	UFUNCTION(BlueprintCallable)
 	void AddToLevel(int32 InLevel);
+	void UpdateAbilityStatuses();
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelUpInfo;

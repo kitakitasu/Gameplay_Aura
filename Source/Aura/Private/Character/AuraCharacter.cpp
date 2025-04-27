@@ -175,6 +175,17 @@ void AAuraCharacter::InitializeAttributes()
 	ApplyGameplayEffectToSelf(DefaultVitalAttributes, 1);
 }
 
+void AAuraCharacter::AddCharacterAbilities()
+{
+	Super::AddCharacterAbilities();
+	//把1级的技能状态改为Eligible
+	AAuraPlayerState * AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState());
+	if (AuraPlayerState && HasAuthority())
+	{
+		AuraPlayerState->UpdateAbilityStatuses();
+	}
+}
+
 FVector AAuraCharacter::GetCameraLocation_Implementation()
 {
 	return FVector();

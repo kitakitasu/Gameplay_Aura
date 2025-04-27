@@ -11,6 +11,7 @@ class UAuraAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsDelegate, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGivenSignature, UAuraAbilitySystemComponent*);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag&/* AbilityTag */, const FGameplayTag&/* StatusTag */);
 /**
  * 
  */
@@ -25,9 +26,11 @@ public:
 	
 	FEffectAssetTagsDelegate EffectAssetTags;
 	FAbilitiesGivenSignature AbilitiesGivenDelegate;
+	FAbilityStatusChanged AbilityStatusChanged;
 
 	static FGameplayTag GetAbilityTagFromSpec(FGameplayAbilitySpec AbilitySpec);
 	static FGameplayTag GetInputTagFromAbility(const FGameplayAbilitySpec& Spec);
+	static FGameplayTag GetAbilityStatusTag(const FGameplayAbilitySpec& Spec);
 
 	void ForEachAbility(FForEachAbility Delegate);
 	
@@ -41,6 +44,9 @@ public:
 	/* 用来在WidgetController中调用来增加属性 */
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
+	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
+	void UpdateAbilityStatuses(int32 Level);
+
 protected:
 	/* AddCharacterAbilities只会在Service中调用，此函数运行后改变ActivateAbilities，正好可以用这个OnRep函数来在Client中监测AddAbilities */
 	virtual void OnRep_ActivateAbilities() override;
@@ -50,6 +56,10 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
+	
 };
 
 

@@ -43,6 +43,8 @@ public:
 	virtual void InitializeAttributes() override;
 	
 protected:
+
+	virtual void AddCharacterAbilities() override;
 	/*
 	 * 用于初始化各属性的GameplayEffect class
 	 */

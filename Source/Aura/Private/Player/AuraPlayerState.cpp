@@ -35,12 +35,22 @@ void AAuraPlayerState::SetLevel(int32 NewLevel)
 {
 	PlayerLevel = NewLevel;
 	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	UpdateAbilityStatuses();
 }
 
 void AAuraPlayerState::AddToLevel(int32 InLevel)
 {
 	PlayerLevel += InLevel;
 	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	UpdateAbilityStatuses();
+}
+
+void AAuraPlayerState::UpdateAbilityStatuses()
+{
+	if (UAuraAbilitySystemComponent* ASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		ASC->UpdateAbilityStatuses(GetPlayerLevel());
+	}
 }
 
 void AAuraPlayerState::SetXP(int32 NewXP)
@@ -75,7 +85,6 @@ void AAuraPlayerState::SetAttributePoints(int32 NewAttributePoints)
 
 void AAuraPlayerState::AddToAttributePoints(int32 InAttributePoints)
 {
-	
 	AttributePoints += InAttributePoints;
 	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }

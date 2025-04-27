@@ -113,7 +113,19 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Summon"));
 	GameplayTags.Abilities_Fire_FireBolt =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Fire.FireBolt"));
-	
+	GameplayTags.Abilities_Lightning_Electrocute =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Lightning.Electrocute"));
+	GameplayTags.Abilities_None =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.None"));
+
+	GameplayTags.Abilities_Status_Locked =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Locked"));
+	GameplayTags.Abilities_Status_Eligible =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Eligible"));
+	GameplayTags.Abilities_Status_Enable =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Enable"));
+	GameplayTags.Abilities_Status_Equipped =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Equipped"));
 	/*
 	 *Effect Tags
 	 */

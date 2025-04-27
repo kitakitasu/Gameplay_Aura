@@ -33,8 +33,16 @@ void UAuraWidgetController::BroadcastAbilityInfo(UAuraAbilitySystemComponent* Au
 		{
 			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoFromTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
 			Info.InputTag = AuraASC->GetInputTagFromAbility(AbilitySpec);
+			Info.StatusTag = AuraASC->GetAbilityStatusTag(AbilitySpec);
 			AbilityInfoDelegate.Broadcast(Info);
 		}
 	);
 	AuraASC->ForEachAbility(BroadcastDelegate);
+}
+
+UAuraAbilitySystemComponent* UAuraWidgetController::GetAuraASC()
+{
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+		return AuraASC;
+	return nullptr;
 }

@@ -66,5 +66,7 @@ protected:
 	
 	void BroadcastAbilityInfo(UAuraAbilitySystemComponent* AuraASC);
 
+	UAuraAbilitySystemComponent* GetAuraASC();
+
 	
 };

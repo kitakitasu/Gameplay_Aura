@@ -80,6 +80,13 @@ public:
 	FGameplayTag Abilities_GiantAttack;
 	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Fire_FireBolt;
+	FGameplayTag Abilities_Lightning_Electrocute;
+	FGameplayTag Abilities_None;
+	
+	FGameplayTag Abilities_Status_Locked;
+	FGameplayTag Abilities_Status_Eligible;
+	FGameplayTag Abilities_Status_Enable;
+	FGameplayTag Abilities_Status_Equipped;
 	/*
 	 * Effect Tags
 	 */

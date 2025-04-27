@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "SpellMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCancelSelectionSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FButtonEnableSignature, bool, bEquipButtonEnable, bool, bUpgradeButtonEnable);
 
 /**
  * 
@@ -32,4 +34,20 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "Button")
 	FCancelSelectionSignature CancelEquippedSpellGlobeSelectionDelegate;
+
+	UFUNCTION(BlueprintCallable, Category = "Button")
+	void OnSelectSpellButton(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
+
+	UPROPERTY(BlueprintAssignable, Category = "Button")
+	FButtonEnableSignature ButtonEnableDelegate;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Spell")
+	int32 SpellPoints = 0;
+
+
+private:
+	/*保存选择的能力和状态*/
+	FGameplayTag SelectedAbilityTag;
+	FGameplayTag SelectedAbilityStatusTag;
+	
 };

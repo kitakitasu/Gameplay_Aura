@@ -74,6 +74,13 @@ USpellMenuWidgetController* UAuraAbilitySystemLibrary::GetSpellMenuWidgetControl
 	return nullptr;
 }
 
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+	UAbilityInfo* Info = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject))->AbilityInfo;
+	checkf(Info, TEXT("AbilityInfo is not set in GameModeBP"));
+	return Info;
+}
+
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();

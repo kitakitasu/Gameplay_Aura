@@ -7,12 +7,16 @@
 #include "Engine/DataAsset.h"
 #include "AbilityInfo.generated.h"
 
+class UAuraGameplayAbility;
+
 USTRUCT(Blueprintable, BlueprintType)
 struct FAuraAbilityInfo
 {
 	GENERATED_BODY()
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AbilityTag;
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag;
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag;
 	UPROPERTY(EditDefaultsOnly ,BlueprintReadOnly)
@@ -21,6 +25,11 @@ struct FAuraAbilityInfo
 	TObjectPtr<const UTexture2D> SkillIcon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 LevelRequirement;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAuraGameplayAbility> AbilityClass;
 };
 
 /**

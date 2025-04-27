@@ -135,7 +135,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float EffectiveCriticalHitChance = SourceCriticalHitChance * ((100 - TargetCriticalHitResistance) / 100);
 	bool bCritical = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCritical);
-	Damage = bCritical ? Damage * SourceCriticalHitDamage * 0.01 : Damage;
+	Damage = bCritical ? Damage * SourceCriticalHitDamage * 0.01 : Damage; 
 	
 	/*修改属性值*/
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);

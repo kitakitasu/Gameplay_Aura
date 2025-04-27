@@ -83,5 +83,5 @@ protected:
 	UFUNCTION(Category = "Initialization|Attributes")
 	virtual void InitializeAttributes();
 	UFUNCTION()
-	void AddCharacterAbilities();
+	virtual void AddCharacterAbilities();
 };
