@@ -8,6 +8,7 @@
 #include "AuraCharacter.generated.h"
 
 class UNiagaraComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDieSignature);
 /**
  * 
  */
@@ -41,6 +42,9 @@ public:
 
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() override;
+
+	UPROPERTY(BlueprintAssignable, Category="Die")
+	FOnCharacterDieSignature OnCharacterDie;
 	
 protected:
 

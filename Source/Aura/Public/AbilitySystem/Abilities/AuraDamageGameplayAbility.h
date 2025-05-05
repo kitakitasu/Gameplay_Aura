@@ -13,6 +13,9 @@ UCLASS()
 class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 {
 	GENERATED_BODY()
+public:
+	float GetDamageByDamageType(float Level, FGameplayTag DamageType);
+	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

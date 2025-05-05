@@ -158,7 +158,7 @@ AActor* AAuraEnemy::GetCombatTarget_Implementation()
 void AAuraEnemy::Die()
 {
 	Super::Die();
-	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+	AuraAIController->GetBlackboardComponent()->SetValueAsFloat(FName("IsDead"), 1);
 	SetLifeSpan(LifeSpan);
 	MulticastDie();
 }

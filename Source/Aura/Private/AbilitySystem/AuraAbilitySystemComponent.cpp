@@ -26,14 +26,7 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(TArray<TSubclassOf<UGame
 		if(const UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(AuraAbility->StartupInputTag);
-			if (AbilitySpec.Ability->AbilityTags.HasTag(FAuraGameplayTags::Get().Abilities_Fire_FireBolt))
-			{
-				AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
-			}
-			else
-			{
-				AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Locked);
-			}
+			AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 			//把能力添加到ASC中
 			GiveAbility(AbilitySpec);
 		}
@@ -88,7 +81,7 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromAbility(const FGameplay
 {
 	for (FGameplayTag Tag : Spec.DynamicAbilityTags)
 	{
-		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Input"))))
+		if (Tag.MatchesTag(FAuraGameplayTags::Get().Input))
 		{
 			return Tag;
 		}
@@ -183,7 +176,8 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
 	{
 		if (!Info.AbilityTag.IsValid()) continue;
 		if (Level < Info.LevelRequirement) continue;
-		if (Info.StatusTag.MatchesTag(FAuraGameplayTags::Get().Abilities_Status_Locked) && GetSpecFromAbilityTag(Info.AbilityTag) != nullptr)
+		//给予AbilityInfo中有但是Character没有的能力
+		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.AbilityClass, 1);
 			AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
@@ -191,6 +185,94 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
 			//强制更新Ability的复制
 			MarkAbilitySpecDirty(AbilitySpec);
 			MulticastUpdateAbilityStatus(Info.AbilityTag, FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			
+		}
+	}
+}
+
+bool UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription,
+	FString& OutNextLevelDescription)
+{
+	//如果当前技能处于锁定状态，将无法获取到对应的技能描述
+	if(FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if(UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability))
+		{
+			const float Level = AbilitySpec->Level;
+			OutDescription = AuraAbility->GetDescription(Level);
+			OutNextLevelDescription = AuraAbility->GetNextLevelDescription(Level + 1);
+			return true;
+		}
+	}
+
+	//如果技能是锁定状态，将显示锁定技能描述
+	UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoFromTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return  false;
+}
+
+void UAuraAbilitySystemComponent::ClearSlot(FGameplayAbilitySpec* Spec)
+{
+	const FGameplayTag Slot = GetInputTagFromAbility(*Spec);
+    Spec->DynamicAbilityTags.RemoveTag(Slot);
+    MarkAbilitySpecDirty(*Spec);
+}
+
+void UAuraAbilitySystemComponent::ClearAbilitiesOfSlot(const FGameplayTag& Slot)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for(FGameplayAbilitySpec& Spec : GetActivatableAbilities())
+	{
+		if(AbilityHasSlot(&Spec, Slot))
+		{
+			ClearSlot(&Spec);
+		}
+	}
+}
+
+bool UAuraAbilitySystemComponent::AbilityHasSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& Slot)
+{
+	for(FGameplayTag Tag : Spec->DynamicAbilityTags)
+	{
+		if(Tag.MatchesTagExact(Slot))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(const FGameplayTag& AbilityTag,
+                                                                    const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot)
+{
+	AbilityEquipped.Broadcast(AbilityTag, Status, Slot, PreviousSlot); //在客户端将更新后的标签广播
+}
+
+void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag,
+                                                                    const FGameplayTag& Slot)
+{
+	if(FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		const FGameplayTag& PrevSlot = GetInputTagFromAbility(*AbilitySpec); //技能之前装配的插槽
+		const FGameplayTag& Status = GetAbilityStatusTag(*AbilitySpec); //当前技能的状态标签
+
+		//判断技能的状态，技能状态只有在已装配或者已解锁的状态才可以装配
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+		if(Status == GameplayTags.Abilities_Status_Equipped || Status == GameplayTags.Abilities_Status_Enable)
+		{
+			ClearAbilitiesOfSlot(Slot); //通过技能的输入标签清除掉插槽的技能
+			ClearSlot(AbilitySpec); //清除掉当前技能的输入标签
+			AbilitySpec->DynamicAbilityTags.AddTag(Slot); //将目标插槽的输入标签添加到技能实例的动态标签容器中
+
+			//如果状态标签是已解锁，我们需要将其修改为已装配状态
+			if(!Status.MatchesTagExact(GameplayTags.Abilities_Status_Enable))
+			{
+				AbilitySpec->DynamicAbilityTags.RemoveTag(GameplayTags.Abilities_Status_Enable);	
+				AbilitySpec->DynamicAbilityTags.AddTag(GameplayTags.Abilities_Status_Equipped);
+			}
+			ClientEquipAbility(AbilityTag, Status, Slot, PrevSlot);
+			MarkAbilitySpecDirty(*AbilitySpec); //立即将其复制到每个客户端
 		}
 	}
 }

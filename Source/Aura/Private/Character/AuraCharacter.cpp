@@ -146,6 +146,7 @@ void AAuraCharacter::Die()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, 0.f, -90.f));
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	DisableInput(PlayerController);
+	OnCharacterDie.Broadcast();
 }
 
 void AAuraCharacter::InitAbilityActorInfo()

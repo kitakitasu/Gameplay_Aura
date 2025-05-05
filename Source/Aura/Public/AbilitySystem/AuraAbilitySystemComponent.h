@@ -12,6 +12,8 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsDelegate, const FGameplayTag
 DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGivenSignature, UAuraAbilitySystemComponent*);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag&/* AbilityTag */, const FGameplayTag&/* StatusTag */);
+DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& InputTag, const FGameplayTag& PreviousInputTag);
+
 /**
  * 
  */
@@ -24,9 +26,11 @@ public:
 
 	bool bStartupAbilitiesGiven = false;
 	
-	FEffectAssetTagsDelegate EffectAssetTags;
-	FAbilitiesGivenSignature AbilitiesGivenDelegate;
-	FAbilityStatusChanged AbilityStatusChanged;
+	FEffectAssetTagsDelegate EffectAssetTags; //
+	FAbilitiesGivenSignature AbilitiesGivenDelegate; //技能获取时，在达到技能规定等级和角色初始化时触发
+	FAbilityStatusChanged AbilityStatusChanged; //技能升级时状态改变
+	FAbilityEquipped AbilityEquipped; //技能装配更新回调
+
 
 	static FGameplayTag GetAbilityTagFromSpec(FGameplayAbilitySpec AbilitySpec);
 	static FGameplayTag GetInputTagFromAbility(const FGameplayAbilitySpec& Spec);
@@ -46,6 +50,25 @@ public:
 
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 	void UpdateAbilityStatuses(int32 Level);
+
+	/*通过标签获取技能描述*/
+	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
+
+	UFUNCTION(Server, Reliable) //在服务器处理技能装配，传入技能标签和装配的技能标签
+	void ServerEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Slot);
+	
+	UFUNCTION(Client, Reliable) //在客户端处理技能装配
+	void ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot);
+
+	void ClearSlot(FGameplayAbilitySpec* Spec); //清除技能装配插槽的技能
+
+	void ClearAbilitiesOfSlot(const FGameplayTag& Slot); //根据输入标签，清除技能装配插槽的技能
+
+	static bool AbilityHasSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& Slot); //判断当前技能实例是否处于目标技能装配插槽
+
+
+	
+
 
 protected:
 	/* AddCharacterAbilities只会在Service中调用，此函数运行后改变ActivateAbilities，正好可以用这个OnRep函数来在Client中监测AddAbilities */

@@ -13,10 +13,14 @@ USTRUCT(Blueprintable, BlueprintType)
 struct FAuraAbilityInfo
 {
 	GENERATED_BODY()
+	//用来识别技能菜单中的Globe
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AbilityTag;
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag StatusTag;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag AbilityTypeTag;
+	//用来识别技能栏中的Globe
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag;
 	UPROPERTY(EditDefaultsOnly ,BlueprintReadOnly)
@@ -25,7 +29,6 @@ struct FAuraAbilityInfo
 	TObjectPtr<const UTexture2D> SkillIcon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 LevelRequirement;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

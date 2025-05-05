@@ -50,6 +50,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * Input Tags
 	 */
+	GameplayTags.Input = 
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input"));
 	GameplayTags.Input_RMB =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.RMB"));
 	GameplayTags.Input_LMB =
@@ -126,6 +128,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Enable"));
 	GameplayTags.Abilities_Status_Equipped =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Status.Equipped"));
+
+	GameplayTags.Abilities_Type_Offensive =
+			UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Type.Offensive"));
+	GameplayTags.Abilities_Type_Passive =
+			UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Type.Passive"));
+	GameplayTags.Abilities_Type_None =
+			UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Type.None"));
+
+	
 	/*
 	 *Effect Tags
 	 */

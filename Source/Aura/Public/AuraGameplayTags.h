@@ -46,6 +46,7 @@ public:
 	/*
 	 * Input Tags
 	 */
+	FGameplayTag Input;
 	FGameplayTag Input_RMB;
 	FGameplayTag Input_LMB;
 	FGameplayTag Input_1;
@@ -87,6 +88,11 @@ public:
 	FGameplayTag Abilities_Status_Eligible;
 	FGameplayTag Abilities_Status_Enable;
 	FGameplayTag Abilities_Status_Equipped;
+
+	FGameplayTag Abilities_Type_Offensive;
+	FGameplayTag Abilities_Type_Passive;
+	FGameplayTag Abilities_Type_None;
+	
 	/*
 	 * Effect Tags
 	 */
