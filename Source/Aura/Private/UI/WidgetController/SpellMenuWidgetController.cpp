@@ -22,6 +22,7 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 		//监听技能状态改变的回调
 		AuraASC->AbilityStatusChanged.AddLambda([this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *AbilityTag.GetTagName().ToString())
 			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoFromTag(AbilityTag);
 			Info.StatusTag = StatusTag;
 			AbilityInfoDelegate.Broadcast(Info);
@@ -78,7 +79,9 @@ void USpellMenuWidgetController::EquipButtonPressed(const FGameplayTag& SlotTag,
 	if(!SelectedAbilityType.MatchesTagExact(AbilityType)) return; //类型不同无法装配
 
 	//获取装配技能的输入标签
-	const FGameplayTag& SelectedAbilityInputTag = GetAuraASC()->GetInputTagFromAbility(*GetAuraASC()->GetSpecFromAbilityTag(SelectedAbilityTag));
+	FGameplayAbilitySpec* Spec = GetAuraASC()->GetSpecFromAbilityTag(SelectedAbilityTag);
+	if (Spec == nullptr) return;
+	const FGameplayTag& SelectedAbilityInputTag = GetAuraASC()->GetInputTagFromAbility(*Spec);
 	if(SelectedAbilityInputTag.MatchesTagExact(SlotTag)) return; //如果当前技能输入和插槽标签相同，证明已经装配，不需要再处理
 
 	//调用装配技能函数，进行处理

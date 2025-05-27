@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
+#include "GameplayTagsManager.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
@@ -66,7 +67,8 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(FGameplayAbility
 {
 	if (AbilitySpec.Ability)
 	{
-		for (FGameplayTag Tag : AbilitySpec.Ability->AbilityTags)
+		const FGameplayTagContainer Tags = AbilitySpec.Ability.Get()->AbilityTags;
+		for (FGameplayTag Tag : Tags)
 		{
 			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
 			{
@@ -79,23 +81,32 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(FGameplayAbility
 
 FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromAbility(const FGameplayAbilitySpec& Spec)
 {
-	for (FGameplayTag Tag : Spec.DynamicAbilityTags)
+	if (Spec.Ability)
 	{
-		if (Tag.MatchesTag(FAuraGameplayTags::Get().Input))
+		const FGameplayTagContainer Tags = Spec.DynamicAbilityTags;
+		for (FGameplayTag Tag : Tags)
 		{
-			return Tag;
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Input"))))
+			{
+				return Tag;
+			}
 		}
 	}
 	return FGameplayTag();
+	
 }
 
 FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTag(const FGameplayAbilitySpec& Spec)
 {
-	for (FGameplayTag Tag : Spec.DynamicAbilityTags)
+	if (Spec.Ability)
 	{
-		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status"))))
+		FGameplayTagContainer Tags = Spec.DynamicAbilityTags;
+		for (FGameplayTag Tag : Tags)
 		{
-			return Tag;
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status"))))
+			{
+				return Tag;
+			}
 		}
 	}
 	return FGameplayTag();
